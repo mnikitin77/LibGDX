@@ -14,7 +14,6 @@ public class Asteroid {
     private StarGame game;
     private Texture texture;
     private Vector2 position;
-    private Vector2 velocity;
     private float dirAngle;
     private float rotAngle;
     private int height;
