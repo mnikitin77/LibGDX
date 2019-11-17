@@ -27,7 +27,7 @@ public class StarGame extends ApplicationAdapter {
     public void create() {
         batch = new SpriteBatch();
         background = new Background(this);
-        asteroid = new Asteroid(this);
+        asteroid = new Asteroid();
         hero = new Hero();
     }
 

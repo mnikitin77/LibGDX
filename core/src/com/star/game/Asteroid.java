@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class Asteroid {
-    private StarGame game;
     private Texture texture;
     private Vector2 position;
     private float dirAngle;
@@ -19,8 +18,7 @@ public class Asteroid {
     private int height;
     private int width;
 
-    public Asteroid(StarGame game) {
-        this.game = game;
+    public Asteroid() {
         texture = new Texture("asteroid.png");
         height = texture.getHeight();
         width = texture.getWidth();
@@ -42,17 +40,14 @@ public class Asteroid {
         position.x += (float) Math.cos(Math.toRadians(dirAngle)) * 120 * dt;
         position.y += (float) Math.sin(Math.toRadians(dirAngle)) * 120 * dt;
 
-         //if (position.x < -width / 2) {
         if (position.x < -width) {
             // gone left
             position.x = ScreenManager.SCREEN_WIDTH + width / 2;
             dirAngle = (float)MathUtils.random(110, 250);
-        //} else if (position.y > ScreenManager.SCREEN_HEIGHT + height / 2) {
         } else if (position.y > ScreenManager.SCREEN_HEIGHT + height) {
             // gone top
             position.y = -height / 2;
             dirAngle = (float)MathUtils.random(20, 160);
-        //} else if (position.x > ScreenManager.SCREEN_WIDTH + width / 2) {
         } else if (position.x > ScreenManager.SCREEN_WIDTH + width) {
             // gone right
             position.x = -width / 2;
