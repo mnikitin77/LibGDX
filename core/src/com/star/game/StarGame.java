@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class StarGame extends ApplicationAdapter {
     private SpriteBatch batch;
     private Background background;
+    private Asteroid asteroid;
     private Hero hero;
 
 	public Hero getHero() {
@@ -26,6 +27,7 @@ public class StarGame extends ApplicationAdapter {
     public void create() {
         batch = new SpriteBatch();
         background = new Background(this);
+        asteroid = new Asteroid(this);
         hero = new Hero();
     }
 
@@ -38,12 +40,14 @@ public class StarGame extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         background.render(batch);
+        asteroid.render(batch);
         hero.render(batch);
         batch.end();
     }
 
     public void update(float dt) {
         background.update(dt);
+        asteroid.update(dt);
 		hero.update(dt);
     }
 
