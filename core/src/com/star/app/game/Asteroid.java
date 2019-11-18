@@ -1,14 +1,10 @@
-/******************************************************************************
-* 3. Сделайте астероид, которые просто летает в случайную сторону, и          *
-* 	 пролетает сквозь экран                                                   *
-******************************************************************************/
-
-package com.star.game;
+package com.star.app.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.star.app.screen.ScreenManager;
 
 public class Asteroid {
     private Texture texture;

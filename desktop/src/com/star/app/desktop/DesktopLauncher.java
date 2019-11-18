@@ -1,8 +1,8 @@
-package com.star.game.desktop;
+package com.star.app.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.star.game.StarGame;
+import com.star.app.StarGame;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
