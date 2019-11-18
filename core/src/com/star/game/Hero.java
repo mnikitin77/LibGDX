@@ -38,6 +38,14 @@ public class Hero {
             position.x += (float) Math.cos(Math.toRadians(angle)) * 240.0f * dt;
             position.y += (float) Math.sin(Math.toRadians(angle)) * 240.0f * dt;
             lastDisplacement.set((float) Math.cos(Math.toRadians(angle)) * 240.0f * dt, (float) Math.sin(Math.toRadians(angle)) * 240.0f * dt);
+        }
+/******************************************************************************
+ *  2. Сделать по кноке S задний ход с уменьшенной вдвое скоростью            *
+ *****************************************************************************/
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            position.x -= (float) Math.cos(Math.toRadians(angle)) * 120.0f * dt;
+            position.y -= (float) Math.sin(Math.toRadians(angle)) * 120.0f * dt;
+            lastDisplacement.set((float) Math.cos(Math.toRadians(angle)) * 120.0f * dt, (float) Math.sin(Math.toRadians(angle)) * 120.0f * dt);
         } else {
             lastDisplacement.set(0, 0);
         }
