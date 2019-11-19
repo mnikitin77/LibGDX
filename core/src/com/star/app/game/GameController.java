@@ -1,12 +1,19 @@
 package com.star.app.game;
 
+import com.star.app.game.bodies.AsteroidController;
+
 public class GameController {
     private Background background;
     private BulletController bulletController;
+    private AsteroidController asteroidController;
     private Hero hero;
 
     public BulletController getBulletController() {
         return bulletController;
+    }
+
+    public AsteroidController getAsteroidController() {
+        return asteroidController;
     }
 
     public Background getBackground() {
@@ -21,12 +28,14 @@ public class GameController {
         this.background = new Background(this);
         this.hero = new Hero(this);
         this.bulletController = new BulletController();
+        this.asteroidController = new AsteroidController();
     }
 
     public void update(float dt) {
         background.update(dt);
         hero.update(dt);
         bulletController.update(dt);
+        asteroidController.update(dt);
         checkCollisions();
     }
 
