@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class SpaceBody {
-    protected Texture texture;
     protected Vector2 position;
     protected Vector2 velocity;
     protected float rotAngle;

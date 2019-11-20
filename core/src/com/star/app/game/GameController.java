@@ -1,5 +1,6 @@
 package com.star.app.game;
 
+import com.star.app.game.bodies.Asteroid;
 import com.star.app.game.bodies.AsteroidController;
 
 public class GameController {
@@ -46,6 +47,19 @@ public class GameController {
             if (hero.getPosition().dst(b.getPosition()) < 32.0f) { // 32.0f - примерно радиус корабля
                 // b.deactivate();
                 // считаем что столкнулись
+            }
+        }
+
+        for (int i = 0; i < bulletController.getActiveList().size(); i++) {
+            Bullet b = bulletController.getActiveList().get(i);
+            for (int j = 0; j < asteroidController.getActiveList().size(); j++) {
+                Asteroid a = asteroidController.getActiveList().get(j);
+                if (a.isHit(b.getPosition())) {
+                    a.deactivate();
+                    b.deactivate(); // Считаем, что одним зарядом можем
+                                    // убить только один астероид.
+                    break;
+                }
             }
         }
     }

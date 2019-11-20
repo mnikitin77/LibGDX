@@ -16,22 +16,24 @@ public class Asteroid extends SpaceBody implements Poolable {
     private Circle hitArea;
     private float sizeFactor;
 
+    protected Texture texture;
     private int imgWidth;
     private int imgHeight;
 
     private boolean active;
 
-    public Asteroid(int weight) throws IllegalArgumentException {
+    public Asteroid(Texture texture, int weight) throws IllegalArgumentException {
         if (weight < MIN_WEIGHT || weight > MAX_WEIGHT) {
             throw new IllegalArgumentException(
                     "Asteroid's weight must be in the range between " +
                     MIN_WEIGHT + " and " + MAX_WEIGHT);
         }
 
+        this.texture = texture;
+
         this.weight = weight;
         sizeFactor = (float)weight / MAX_WEIGHT;
 
-        texture = new Texture("asteroid.png");
         imgHeight = texture.getHeight();
         imgWidth = texture.getWidth();
         height = MathUtils.round(imgHeight * sizeFactor);
@@ -40,13 +42,12 @@ public class Asteroid extends SpaceBody implements Poolable {
         position = new Vector2();
         velocity = new Vector2();
         rotAngle = 0;
-        hitArea = new Circle(position, width / 2 * 0.8f);
+        hitArea = new Circle(position, width / 2);
 
         // Setting the asteroid's initial values
         initialize();
 
         active = false;
-        //active = true;
     }
 
     public Vector2 getPosition() {
@@ -96,6 +97,15 @@ public class Asteroid extends SpaceBody implements Poolable {
 
         rotAngle = (rotAngle - 2.5f * (0.1f + sizeFactor -1)) % 360;
         hitArea.setPosition(position);
+    }
+
+    public boolean isHit(Vector2 pos) {
+        boolean res = false;
+        if (hitArea.contains(pos)) {
+            res = true;
+        }
+
+        return res;
     }
 
     private void initialize() {
