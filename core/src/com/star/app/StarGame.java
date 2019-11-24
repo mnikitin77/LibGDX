@@ -10,11 +10,6 @@ public class StarGame extends Game {
     private SpriteBatch batch;
     private GameScreen gameScreen;
 
-	// Домашнее задание:
-    // 1. Разобраться с кодом
-    // 2. Заворачивайте ваши астероиды в контроллер
-    // 3. * Сделайте уничтожение астероидов с одного попадания
-
 	@Override
     public void create() {
         batch = new SpriteBatch();
@@ -33,3 +28,7 @@ public class StarGame extends Game {
         batch.dispose();
     }
 }
+
+// Вопросы:
+// 1. где находится файл, который мы загружаем? Имя файла динамически созаём
+// как font32.ttf, но в assets\font этого файла нет.
