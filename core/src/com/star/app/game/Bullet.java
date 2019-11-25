@@ -18,6 +18,10 @@ public class Bullet implements Poolable {
         return angle;
     }
 
+    public Vector2 getVelocity() {
+        return velocity;
+    }
+
     @Override
     public boolean isActive() {
         return active;

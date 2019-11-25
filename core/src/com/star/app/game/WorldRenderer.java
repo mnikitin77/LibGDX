@@ -31,12 +31,8 @@ public class WorldRenderer {
         gc.getHero().render(batch);
         gc.getBulletController().render(batch);
         gc.getAsteroidController().render(batch);
-        strBuilder.clear();
-        strBuilder.append("SCORE: ").append(gc.getHero().getScoreView());
-        font32.draw(batch, strBuilder, 20, 700);
-        strBuilder.clear();
-        strBuilder.append("HP: ").append(gc.getHero().getHPView());
-        font32.draw(batch, strBuilder, 320, 700);
+        gc.getParticleController().render(batch);
+        gc.getHero().renderGUI(batch, font32);
         if (gc.getHero().getHp() <= 0) {
             batch.draw(
                     new Texture("images/gameover.png"),

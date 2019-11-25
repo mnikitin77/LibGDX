@@ -2,13 +2,19 @@ package com.star.app.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.StringBuilder;
 import com.star.app.screen.ScreenManager;
 import com.star.app.screen.utils.Assets;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Hero {
     private static final int HERO_HP = 600;
@@ -27,6 +33,8 @@ public class Hero {
     private int hpView;
     private Circle hitArea;
     private boolean rightOrLeftSocket;
+    private StringBuilder strBuilder;
+    private Weapon currentWeapon;
 
     public int getScoreView() {
         return scoreView;
@@ -64,6 +72,10 @@ public class Hero {
         return velocity;
     }
 
+    public float getAngle() {
+        return angle;
+    }
+
     public Hero(GameController gc) {
         this.gc = gc;
         texture = Assets.getInstance().getAtlas().findRegion("ship");
@@ -75,6 +87,21 @@ public class Hero {
         hp = HERO_HP;
         hpView = hp;
         hitArea = new Circle(0f, 0f, texture.getRegionWidth() / 2 * 0.9f);
+        strBuilder = new StringBuilder();
+
+        List<Vector3> list = new ArrayList<>();
+        for (int i = 0; i < 11; i++) {
+            list.add(new Vector3(28, -90 + 18 * i, -90 + 18 * i));
+        }
+
+        this.currentWeapon = new Weapon(
+                gc, this, "Laser", 0.2f, 1, 600.0f, 100,
+                new Vector3[]{
+                        new Vector3(28, 0, 0),
+                        new Vector3(28, 90, 0),
+                        new Vector3(28, -90, 0)
+                }
+        );
     }
 
     public void render(SpriteBatch batch) {
@@ -82,60 +109,50 @@ public class Hero {
                 64, 64, 1, 1, angle);
     }
 
-    public void update(float dt) {
-        if (hpView >= hp) {
-            float hpSpeed = (hpView - hp) / 2.0f;
-            if (hpSpeed < 200.0f) {
-                hpSpeed = 200.0f;
-            }
-            hpView -= hpSpeed * dt;
-            if (hp <= 0) {
-                hpView = 0;
-            } else if (hpView <= hp) {
-                hpView = hp;
-            }
-        }
+    public void renderGUI(SpriteBatch batch, BitmapFont font) {
+        strBuilder.clear();
+        strBuilder.append("SCORE: ").append(scoreView).append("\n");
+        strBuilder.append("HP: ").append(hp).append("\n");
+        strBuilder.append("BULLETS: ").
+                append(currentWeapon.getCurBullets()).append(" / ").
+                append(currentWeapon.getMaxBullets()).append("\n");
+        font.draw(batch, strBuilder, 20, 700);
+    }
 
+    public void update(float dt) {
+        updateHP(dt);
         if(hp <= 0) {
+            hp = 0;
             return;
         }
-
-        if (scoreView < score) {
-            float scoreSpeed = (score - scoreView) / 2.0f;
-            if (scoreSpeed < 2000.0f) {
-                scoreSpeed = 2000.0f;
-            }
-            scoreView += scoreSpeed * dt;
-            if (scoreView > score) {
-                scoreView = score;
-            }
-        }
+        updateScore(dt);
 
         fireTimer += dt;
         if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-            if (fireTimer > 0.2f) {
-                fireTimer = 0.0f;
-                float wx = 0.0f, wy = 0.0f;
-
-                rightOrLeftSocket = !rightOrLeftSocket;
-
-                if (rightOrLeftSocket) {
-                    wx = position.x + (float) Math.cos(
-                            Math.toRadians(angle + 90)) * 25;
-                    wy = position.y + (float) Math.sin(
-                            Math.toRadians(angle + 90)) * 25;
-                } else {
-                    wx = position.x + (float) Math.cos(
-                            Math.toRadians(angle - 90)) * 25;
-                    wy = position.y + (float) Math.sin(
-                            Math.toRadians(angle - 90)) * 25;
-                }
-
-                gc.getBulletController().setup(wx, wy,
-                        (float) Math.cos(Math.toRadians(angle)) * 600 + velocity.x,
-                        (float) Math.sin(Math.toRadians(angle)) * 600 + velocity.y,
-                        angle);
-            }
+            tryToFire();
+//            if (fireTimer > 0.2f) {
+//                fireTimer = 0.0f;
+//                float wx = 0.0f, wy = 0.0f;
+//
+//                rightOrLeftSocket = !rightOrLeftSocket;
+//
+//                if (rightOrLeftSocket) {
+//                    wx = position.x + (float) Math.cos(
+//                            Math.toRadians(angle + 90)) * 25;
+//                    wy = position.y + (float) Math.sin(
+//                            Math.toRadians(angle + 90)) * 25;
+//                } else {
+//                    wx = position.x + (float) Math.cos(
+//                            Math.toRadians(angle - 90)) * 25;
+//                    wy = position.y + (float) Math.sin(
+//                            Math.toRadians(angle - 90)) * 25;
+//                }
+//
+//                gc.getBulletController().setup(wx, wy,
+//                        (float) Math.cos(Math.toRadians(angle)) * 600 + velocity.x,
+//                        (float) Math.sin(Math.toRadians(angle)) * 600 + velocity.y,
+//                        angle);
+//            }
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
@@ -165,41 +182,90 @@ public class Hero {
         }
         velocity.scl(stopKoef);
 
-        if (position.x < 0.0f) {
-            position.x = 0.0f;
-            velocity.x *= -1;
-        }
-        if (position.x > ScreenManager.SCREEN_WIDTH) {
-            position.x = ScreenManager.SCREEN_WIDTH;
-            velocity.x *= -1;
-        }
-        if (position.y < 0.0f) {
-            position.y = 0.0f;
-            velocity.y *= -1;
-        }
-        if (position.y > ScreenManager.SCREEN_HEIGHT) {
-            position.y = ScreenManager.SCREEN_HEIGHT;
-            velocity.y *= -1;
-        }
+        exhaust();
+        checkSpaceBorders();
 
         hitArea.setPosition(position);
+    }
+
+    public void tryToFire() {
+        if (fireTimer > currentWeapon.getFirePeriod()) {
+            fireTimer = 0.0f;
+            currentWeapon.fire();
+        }
     }
 
     public boolean takeDamage(int amount) {
         hp -= amount;
         if (hp <= 0) {
+            gc.gameOver();
             return true;
         }
         return false;
     }
 
-    public void rebound(Vector2 objPosition, Vector2 objVelocity,
-                        float objRadius, float sizeFactor) {
-        float shift = sizeFactor * REBOUND_COEFFICIENT *
-                (hitArea.radius + objRadius -
-                        position.dst(objPosition)) / 2.0f;
+    private void checkSpaceBorders() {
+        if (position.x < hitArea.radius) {
+            position.x = hitArea.radius;
+            velocity.x *= -1;
+        }
+        if (position.x > ScreenManager.SCREEN_WIDTH - hitArea.radius) {
+            position.x = ScreenManager.SCREEN_WIDTH - hitArea.radius;
+            velocity.x *= -1;
+        }
+        if (position.y < hitArea.radius) {
+            position.y = hitArea.radius;
+            velocity.y *= -1;
+        }
+        if (position.y > ScreenManager.SCREEN_HEIGHT - hitArea.radius) {
+            position.y = ScreenManager.SCREEN_HEIGHT - hitArea.radius;
+            velocity.y *= -1;
+        }
+    }
 
-        velocity.x += Math.abs(shift * Math.cos(Math.toRadians(angle)));
-        velocity.y += Math.abs(shift * Math.sin(Math.toRadians(angle)));
+    private void updateScore(float dt) {
+        if (scoreView < score) {
+            float scoreSpeed = (score - scoreView) / 2.0f;
+            if (scoreSpeed < 2000.0f) {
+                scoreSpeed = 2000.0f;
+            }
+            scoreView += scoreSpeed * dt;
+            if (scoreView > score) {
+                scoreView = score;
+            }
+        }
+    }
+
+    private void updateHP(float dt) {
+        if (hpView >= hp) {
+            float hpSpeed = (hpView - hp) / 2.0f;
+            if (hpSpeed < 200.0f) {
+                hpSpeed = 200.0f;
+            }
+            hpView -= hpSpeed * dt;
+            if (hp <= 0) {
+                hpView = 0;
+            } else if (hpView <= hp) {
+                hpView = hp;
+            }
+        }
+    }
+
+    private void exhaust() {
+        if (velocity.len() > 50.0f) {
+            float bx, by;
+            bx = position.x - 28.0f * (float) Math.cos(Math.toRadians(angle));
+            by = position.y - 28.0f * (float) Math.sin(Math.toRadians(angle));
+            for (int i = 0; i < 5; i++) {
+                gc.getParticleController().setup(
+                        bx + MathUtils.random(-4, 4), by + MathUtils.random(-4, 4),
+                        velocity.x * -0.3f + MathUtils.random(-20, 20), velocity.y * -0.3f + MathUtils.random(-20, 20),
+                        0.5f,
+                        1.2f, 0.2f,
+                        1.0f, 0.5f, 0.0f, 1.0f,
+                        1.0f, 1.0f, 1.0f, 0.0f
+                );
+            }
+        }
     }
 }
