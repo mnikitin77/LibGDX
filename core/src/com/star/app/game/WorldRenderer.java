@@ -2,15 +2,25 @@ package com.star.app.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.StringBuilder;
+import com.star.app.screen.ScreenManager;
+import com.star.app.screen.utils.Assets;
 
 public class WorldRenderer {
     private GameController gc;
     private SpriteBatch batch;
+    private BitmapFont font32;
+    private StringBuilder strBuilder;
 
     public WorldRenderer(GameController gc, SpriteBatch batch) {
         this.gc = gc;
         this.batch = batch;
+        font32 = Assets.getInstance().getAssetManager().get(
+                "fonts/font32.ttf", BitmapFont.class);
+        strBuilder = new StringBuilder();
     }
 
     public void render() {
@@ -21,6 +31,18 @@ public class WorldRenderer {
         gc.getHero().render(batch);
         gc.getBulletController().render(batch);
         gc.getAsteroidController().render(batch);
+        strBuilder.clear();
+        strBuilder.append("SCORE: ").append(gc.getHero().getScoreView());
+        font32.draw(batch, strBuilder, 20, 700);
+        strBuilder.clear();
+        strBuilder.append("HP: ").append(gc.getHero().getHPView());
+        font32.draw(batch, strBuilder, 320, 700);
+        if (gc.getHero().getHp() <= 0) {
+            batch.draw(
+                    new Texture("images/gameover.png"),
+                    ScreenManager.SCREEN_WIDTH / 2 - 170,
+                    ScreenManager.SCREEN_HEIGHT / 2 - 74);
+        }
         batch.end();
     }
 }

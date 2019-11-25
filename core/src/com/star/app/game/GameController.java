@@ -29,7 +29,7 @@ public class GameController {
         this.background = new Background(this);
         this.hero = new Hero(this);
         this.bulletController = new BulletController();
-        this.asteroidController = new AsteroidController();
+        this.asteroidController = new AsteroidController(this);
     }
 
     public void update(float dt) {
@@ -40,24 +40,31 @@ public class GameController {
         checkCollisions();
     }
 
-    // Заготовка под столкновение с астероидами (для ДЗ)
     public void checkCollisions() {
-        for (int i = 0; i < bulletController.getActiveList().size(); i++) {
-            Bullet b = bulletController.getActiveList().get(i);
-            if (hero.getPosition().dst(b.getPosition()) < 32.0f) { // 32.0f - примерно радиус корабля
-                // b.deactivate();
-                // считаем что столкнулись
+        // Столкновение корабля с астероидом
+        for (int i = 0; i < asteroidController.getActiveList().size(); i++) {
+            Asteroid a = asteroidController.getActiveList().get(i);
+            if (hero.getHitArea().overlaps(a.getHitArea())) {
+                a.rebound(hero.getPosition(), hero.getVelocity(),
+                        hero.getHitArea().radius);
+                hero.rebound(a.getPosition(), a.getVelocity(),
+                        a.getHitArea().radius, a.getScale());
+                hero.takeDamage(a.getWeight() * 20);
+                a.deactivate();
             }
         }
 
+        // Попадание боеприпасом в астероидом
         for (int i = 0; i < bulletController.getActiveList().size(); i++) {
             Bullet b = bulletController.getActiveList().get(i);
             for (int j = 0; j < asteroidController.getActiveList().size(); j++) {
                 Asteroid a = asteroidController.getActiveList().get(j);
-                if (a.isHit(b.getPosition())) {
-                    a.deactivate();
+                if (a.getHitArea().contains(b.getPosition())) {
                     b.deactivate(); // Считаем, что одним зарядом можем
                                     // убить только один астероид.
+                    if (a.takeDamage(1)) {
+                        hero.addScore(a.getHpMax() * 100);
+                    }
                     break;
                 }
             }
