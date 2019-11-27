@@ -4,13 +4,15 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.star.app.game.bodies.Asteroid;
 import com.star.app.game.bodies.AsteroidController;
-import com.star.app.screen.ScreenManager;
+import com.star.app.game.items.Item;
+import com.star.app.game.items.ItemsController;
 
 public class GameController {
     private Background background;
     private BulletController bulletController;
     private AsteroidController asteroidController;
     private ParticleController particleController;
+    private ItemsController itemsController;
     private Hero hero;
     private Vector2 tmpVec;
     private boolean isGameOver;
@@ -27,6 +29,10 @@ public class GameController {
         return particleController;
     }
 
+    public ItemsController getItemsController() {
+        return itemsController;
+    }
+
     public Background getBackground() {
         return background;
     }
@@ -40,12 +46,13 @@ public class GameController {
     }
 
     public GameController() {
-        this.background = new Background(this);
-        this.hero = new Hero(this);
-        this.bulletController = new BulletController();
-        this.asteroidController = new AsteroidController(this);
+        background = new Background(this);
+        hero = new Hero(this);
+        bulletController = new BulletController();
+        asteroidController = new AsteroidController(this);
         particleController = new ParticleController();
-        this.tmpVec = new Vector2(0.0f, 0.0f);
+        itemsController = new ItemsController(this);
+        tmpVec = new Vector2(0.0f, 0.0f);
         isGameOver = false;
     }
 
@@ -54,6 +61,7 @@ public class GameController {
         hero.update(dt);
         bulletController.update(dt);
         asteroidController.update(dt);
+        itemsController.update(dt);
         particleController.update(dt);
         if (hero.getHp() > 0 && !isGameOver) {
             checkCollisions();
@@ -106,6 +114,15 @@ public class GameController {
                     }
                     break;
                 }
+            }
+        }
+
+        // Собираем предметы
+        for (int i = 0; i < itemsController.getActiveList().size(); i++) {
+            Item item = itemsController.getActiveList().get(i);
+            if (hero.getHitArea().overlaps(item.getHitArea())) {
+                item.interact(hero); // Кормим героя предметом.
+                item.deactivate(); // Возвращаем предмет в пул.
             }
         }
     }

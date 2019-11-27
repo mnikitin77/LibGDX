@@ -69,6 +69,7 @@ public class ParticleController extends ObjectPool<Particle> {
         for (int i = 0; i < activeList.size(); i++) {
             activeList.get(i).update(dt);
         }
+        checkPool();
     }
 
     public float lerp(float value1, float value2, float point) {
