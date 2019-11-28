@@ -13,7 +13,7 @@ public class Asteroid extends SpaceBody implements Poolable {
     private final static int MAX_WEIGHT = 10;
     private final static int MIN_WEIGHT = 1;
     private final static int LOWEST_SPEED = 120;
-    private final static float REBOUND_COEFFICIENT = 1.5f;
+    private final static float ITEM_THROW_PROBABILITY = 0.25f;
 
     private GameController gc;
     private Circle hitArea;
@@ -136,17 +136,15 @@ public class Asteroid extends SpaceBody implements Poolable {
                             MathUtils.random(-150.0f, 150.0f),
                             scale - 0.2f);
                 }
+            } else { // выкидываем предмет с вероятностью 10%
+                if (MathUtils.random() <= ITEM_THROW_PROBABILITY) {
+                    gc.getItemsController().setup(
+                            position.x, position.y, 0f, 0f, 1.0f);
+                }
             }
             return true;
         }
         return false;
-    }
-
-    public void rebound(Vector2 objPosition, Vector2 objVelocity, float objRadius) {
-        float shift = scale * REBOUND_COEFFICIENT *
-                (hitArea.radius + objRadius -
-                        position.dst(objPosition)) / 2.0f;
-        velocity.scl(-shift);
     }
 
     private Vector2[] initialize() {

@@ -82,7 +82,9 @@ public class Particle implements Poolable {
         size2 = 1.0f;
     }
 
-    public void init(float x, float y, float vx, float vy, float timeMax, float size1, float size2, float r1, float g1, float b1, float a1, float r2, float g2, float b2, float a2) {
+    public void init(float x, float y, float vx, float vy, float timeMax,
+                     float size1, float size2, float r1, float g1, float b1,
+                     float a1, float r2, float g2, float b2, float a2) {
         this.position.x = x;
         this.position.y = y;
         this.velocity.x = vx;

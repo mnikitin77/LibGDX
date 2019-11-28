@@ -16,8 +16,8 @@ import com.star.app.screen.utils.Assets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hero {
-    private static final int HERO_HP = 600;
+public class Hero implements Consumable{
+    private static final int HERO_HP = 1000;
     private static final float REBOUND_COEFFICIENT = 3.0f;
 
     private GameController gc;
@@ -31,6 +31,8 @@ public class Hero {
     private int scoreView;
     private int hp;
     private int hpView;
+    private int money;
+    private int moneyView;
     private Circle hitArea;
     private boolean rightOrLeftSocket;
     private StringBuilder strBuilder;
@@ -42,6 +44,10 @@ public class Hero {
 
     public int getHPView() {
         return hpView;
+    }
+
+    public int getMoneyView() {
+        return moneyView;
     }
 
     public void addScore(int amount) {
@@ -88,6 +94,7 @@ public class Hero {
         hpView = hp;
         hitArea = new Circle(0f, 0f, texture.getRegionWidth() / 2 * 0.9f);
         strBuilder = new StringBuilder();
+        money = 0;
 
         List<Vector3> list = new ArrayList<>();
         for (int i = 0; i < 11; i++) {
@@ -95,7 +102,7 @@ public class Hero {
         }
 
         this.currentWeapon = new Weapon(
-                gc, this, "Laser", 0.2f, 1, 600.0f, 100,
+                gc, this, "Laser", 0.2f, 1, 600.0f, 300,
                 new Vector3[]{
                         new Vector3(28, 0, 0),
                         new Vector3(28, 90, 0),
@@ -116,6 +123,7 @@ public class Hero {
         strBuilder.append("BULLETS: ").
                 append(currentWeapon.getCurBullets()).append(" / ").
                 append(currentWeapon.getMaxBullets()).append("\n");
+        strBuilder.append("COINS: ").append(money).append("\n");
         font.draw(batch, strBuilder, 20, 700);
     }
 
@@ -126,33 +134,11 @@ public class Hero {
             return;
         }
         updateScore(dt);
+        updateMoney(dt);
 
         fireTimer += dt;
         if (Gdx.input.isKeyPressed(Input.Keys.P)) {
             tryToFire();
-//            if (fireTimer > 0.2f) {
-//                fireTimer = 0.0f;
-//                float wx = 0.0f, wy = 0.0f;
-//
-//                rightOrLeftSocket = !rightOrLeftSocket;
-//
-//                if (rightOrLeftSocket) {
-//                    wx = position.x + (float) Math.cos(
-//                            Math.toRadians(angle + 90)) * 25;
-//                    wy = position.y + (float) Math.sin(
-//                            Math.toRadians(angle + 90)) * 25;
-//                } else {
-//                    wx = position.x + (float) Math.cos(
-//                            Math.toRadians(angle - 90)) * 25;
-//                    wy = position.y + (float) Math.sin(
-//                            Math.toRadians(angle - 90)) * 25;
-//                }
-//
-//                gc.getBulletController().setup(wx, wy,
-//                        (float) Math.cos(Math.toRadians(angle)) * 600 + velocity.x,
-//                        (float) Math.sin(Math.toRadians(angle)) * 600 + velocity.y,
-//                        angle);
-//            }
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
@@ -204,6 +190,24 @@ public class Hero {
         return false;
     }
 
+    @Override
+    public void rechargeWeapon(int amount) {
+        currentWeapon.recharge(amount);
+    }
+
+    @Override
+    public void takeMoney(int amount) {
+        money += amount;
+    }
+
+    @Override
+    public void heal(int amount) {
+        hp += amount;
+        if (hp > HERO_HP) {
+            hp = HERO_HP;
+        }
+    }
+
     private void checkSpaceBorders() {
         if (position.x < hitArea.radius) {
             position.x = hitArea.radius;
@@ -239,8 +243,8 @@ public class Hero {
     private void updateHP(float dt) {
         if (hpView >= hp) {
             float hpSpeed = (hpView - hp) / 2.0f;
-            if (hpSpeed < 200.0f) {
-                hpSpeed = 200.0f;
+            if (hpSpeed < 10.0f) {
+                hpSpeed = 10.0f;
             }
             hpView -= hpSpeed * dt;
             if (hp <= 0) {
@@ -251,15 +255,30 @@ public class Hero {
         }
     }
 
+    private void updateMoney(float dt) {
+        if (moneyView < money) {
+            float moneySpeed = (money - moneyView) / 2.0f;
+            if (moneySpeed < 10.0f) {
+                moneySpeed = 10.0f;
+            }
+            moneySpeed += moneySpeed * dt;
+            if (moneySpeed > money) {
+                moneySpeed = money;
+            }
+        }
+    }
+
     private void exhaust() {
         if (velocity.len() > 50.0f) {
             float bx, by;
             bx = position.x - 28.0f * (float) Math.cos(Math.toRadians(angle));
             by = position.y - 28.0f * (float) Math.sin(Math.toRadians(angle));
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 2; i++) {
                 gc.getParticleController().setup(
-                        bx + MathUtils.random(-4, 4), by + MathUtils.random(-4, 4),
-                        velocity.x * -0.3f + MathUtils.random(-20, 20), velocity.y * -0.3f + MathUtils.random(-20, 20),
+                        bx + MathUtils.random(-4, 4),
+                        by + MathUtils.random(-4, 4),
+                        velocity.x * -0.3f + MathUtils.random(-20, 20),
+                        velocity.y * -0.3f + MathUtils.random(-20, 20),
                         0.5f,
                         1.2f, 0.2f,
                         1.0f, 0.5f, 0.0f, 1.0f,

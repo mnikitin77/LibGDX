@@ -28,7 +28,3 @@ public class StarGame extends Game {
         batch.dispose();
     }
 }
-
-// Вопросы:
-// 1. где находится файл, который мы загружаем? Имя файла динамически созаём
-// как font32.ttf, но в assets\font этого файла нет.
