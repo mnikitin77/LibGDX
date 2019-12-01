@@ -39,7 +39,7 @@ public class WorldRenderer {
         gc.getHero().renderGUI(batch, font32);
         if (gc.getHero().getHp() <= 0) {
             batch.draw(
-                    new Texture("images/gameover.png"),
+                    Assets.getInstance().getAtlas().findRegion("gameover"),
                     ScreenManager.SCREEN_WIDTH / 2 - 170,
                     ScreenManager.SCREEN_HEIGHT / 2 - 74);
         }

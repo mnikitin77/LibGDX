@@ -47,7 +47,7 @@ public class GameController {
 
     public GameController() {
         background = new Background(this);
-        hero = new Hero(this);
+        hero = new Hero(this, "PLAYER1");
         bulletController = new BulletController();
         asteroidController = new AsteroidController(this);
         particleController = new ParticleController();
@@ -70,6 +70,16 @@ public class GameController {
 
     public void checkCollisions() {
         // Столкновение корабля с астероидом
+        checkActeroidCollisions();
+
+        // Попадание боеприпасом в астероид
+        checkBulletCollisions();
+
+        // Собираем предметы
+        pickUpItems();
+    }
+
+    private void checkActeroidCollisions() {
         for (int i = 0; i < asteroidController.getActiveList().size(); i++) {
             Asteroid a = asteroidController.getActiveList().get(i);
             if (hero.getHitArea().overlaps(a.getHitArea())) {
@@ -90,8 +100,9 @@ public class GameController {
                 hero.takeDamage(a.getWeight() * 20);
             }
         }
+    }
 
-        // Попадание боеприпасом в астероид
+    private void checkBulletCollisions() {
         for (int i = 0; i < bulletController.getActiveList().size(); i++) {
             Bullet b = bulletController.getActiveList().get(i);
             for (int j = 0; j < asteroidController.getActiveList().size(); j++) {
@@ -108,7 +119,7 @@ public class GameController {
                     );
 
                     b.deactivate(); // Считаем, что одним зарядом можем
-                                    // убить только один астероид.
+                    // убить только один астероид.
                     if (a.takeDamage(1)) {
                         hero.addScore(a.getHpMax() * 100);
                     }
@@ -116,8 +127,9 @@ public class GameController {
                 }
             }
         }
+    }
 
-        // Собираем предметы
+    private void pickUpItems() {
         for (int i = 0; i < itemsController.getActiveList().size(); i++) {
             Item item = itemsController.getActiveList().get(i);
             if (hero.getHitArea().overlaps(item.getHitArea())) {
@@ -125,5 +137,9 @@ public class GameController {
                 item.deactivate(); // Возвращаем предмет в пул.
             }
         }
+    }
+
+    public void dispose() {
+        background.dispose();
     }
 }

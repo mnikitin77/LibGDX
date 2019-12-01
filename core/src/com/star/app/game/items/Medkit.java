@@ -1,13 +1,13 @@
 package com.star.app.game.items;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.star.app.game.Consumable;
 
 public class Medkit extends Item {
     private static final int HP_MULTIPLIER = 100;
 
-    public Medkit(Texture texture) {
+    public Medkit(TextureRegion texture) {
         super(texture);
     }
 

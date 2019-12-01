@@ -1,18 +1,18 @@
 package com.star.app.game.items;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.star.app.game.GameController;
 import com.star.app.game.helpers.ObjectPool;
+import com.star.app.screen.utils.Assets;
 
 public class ItemsController  extends ObjectPool<Item> {
     private GameController gc;
-//    private static final int ITEMS_COUNT = 10;
-    protected Texture medkitTexture;
-    protected Texture coinsTexture;
-    protected Texture bulletBoxTexture;
+    protected TextureRegion medkitTexture;
+    protected TextureRegion coinsTexture;
+    protected TextureRegion bulletBoxTexture;
 
     @Override
     protected Item newObject() {
@@ -21,9 +21,9 @@ public class ItemsController  extends ObjectPool<Item> {
 
     public ItemsController(GameController gc) {
         this.gc = gc;
-        medkitTexture =  new Texture("images/medical-pack-alt-white.png");
-        coinsTexture =  new Texture("images/two-coins.png");
-        bulletBoxTexture =  new Texture("images/heavy-bullets.png");
+        medkitTexture = Assets.getInstance().getAtlas().findRegion("medical-pack-alt-white");
+        coinsTexture = Assets.getInstance().getAtlas().findRegion("two-coins");;
+        bulletBoxTexture = Assets.getInstance().getAtlas().findRegion("heavy-bullets");
     }
 
     public void setup(float x, float y, float vx, float vy, float scale) {

@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.star.app.screen.ScreenManager;
 import com.star.app.screen.utils.Assets;
+import com.star.app.screen.utils.OptionsUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class Hero implements Consumable{
 
     private GameController gc;
     private TextureRegion texture;
+    private KeysControl keysControl;
     private Vector2 position;
     private Vector2 velocity;
     private float angle;
@@ -82,7 +84,7 @@ public class Hero implements Consumable{
         return angle;
     }
 
-    public Hero(GameController gc) {
+    public Hero(GameController gc, String keysControlPrefix) {
         this.gc = gc;
         texture = Assets.getInstance().getAtlas().findRegion("ship");
         position = new Vector2(ScreenManager.SCREEN_WIDTH / 2,
@@ -96,10 +98,12 @@ public class Hero implements Consumable{
         strBuilder = new StringBuilder();
         money = 0;
 
-        List<Vector3> list = new ArrayList<>();
-        for (int i = 0; i < 11; i++) {
-            list.add(new Vector3(28, -90 + 18 * i, -90 + 18 * i));
-        }
+        this.keysControl = new KeysControl(OptionsUtils.loadProperties(), keysControlPrefix);
+
+//        List<Vector3> list = new ArrayList<>();
+//        for (int i = 0; i < 11; i++) {
+//            list.add(new Vector3(28, -90 + 18 * i, -90 + 18 * i));
+//        }
 
         this.currentWeapon = new Weapon(
                 gc, this, "Laser", 0.2f, 1, 600.0f, 300,
@@ -119,11 +123,11 @@ public class Hero implements Consumable{
     public void renderGUI(SpriteBatch batch, BitmapFont font) {
         strBuilder.clear();
         strBuilder.append("SCORE: ").append(scoreView).append("\n");
+        strBuilder.append("COINS: ").append(money).append("\n");
         strBuilder.append("HP: ").append(hp).append("\n");
         strBuilder.append("BULLETS: ").
                 append(currentWeapon.getCurBullets()).append(" / ").
                 append(currentWeapon.getMaxBullets()).append("\n");
-        strBuilder.append("COINS: ").append(money).append("\n");
         font.draw(batch, strBuilder, 20, 700);
     }
 

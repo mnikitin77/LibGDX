@@ -1,13 +1,13 @@
 package com.star.app.game.items;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.star.app.game.Consumable;
 
 public class Coins extends Item{
     private static final int COINS_MULTIPLIER = 5;
 
-    public Coins(Texture texture) {
+    public Coins(TextureRegion texture) {
         super(texture);
     }
 

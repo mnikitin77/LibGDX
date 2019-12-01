@@ -1,13 +1,13 @@
 package com.star.app.game.items;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.star.app.game.Consumable;
 
 public class BulletBox extends Item {
     private static final int BULLET_MULTIPLIER = 100;
 
-    public BulletBox(Texture texture) {
+    public BulletBox(TextureRegion texture) {
         super(texture);
     }
 

@@ -3,8 +3,10 @@ package com.star.app.game.items;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 import com.star.app.game.Consumable;
 import com.star.app.game.helpers.Poolable;
 import com.badlogic.gdx.utils.StringBuilder;
@@ -14,22 +16,23 @@ public abstract class Item implements Poolable {
     protected Vector2 position;
     protected Vector2 velocity;
     protected Circle hitArea;
-    protected Texture texture;
+    protected TextureRegion texture;
     protected int imgWidth;
     protected int imgHeight;
     protected float scale;
     protected StringBuilder strBuilder;
     protected boolean active;
 
-    public Item(Texture texture) {
+    public Item(TextureRegion texture) {
         this.texture = texture;
         this.amount = 0;
         position = new Vector2();
         velocity = new Vector2();
         scale = 0f;
-        imgWidth = texture.getWidth();
-        imgHeight = texture.getHeight();
+        imgWidth = texture.getRegionWidth();
+        imgHeight = texture.getRegionHeight();
         strBuilder = new StringBuilder();
+        hitArea = new Circle();
         active = false;
     }
 
@@ -53,7 +56,7 @@ public abstract class Item implements Poolable {
         return hitArea;
     }
 
-    public Texture getTexture() {
+    public TextureRegion getTexture() {
         return texture;
     }
 
@@ -83,7 +86,8 @@ public abstract class Item implements Poolable {
         batch.draw(texture, position.x, position.y, imgWidth, imgHeight);
         strBuilder.clear();
         strBuilder.append("x").append(amount);
-        font.draw(batch, strBuilder, position.x, position.y - 5);
+        font.draw(batch, strBuilder, position.x, position.y - 5,
+                imgWidth, Align.center, false);
     }
 
     public void update(float dt) {
