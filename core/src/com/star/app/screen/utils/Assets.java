@@ -34,16 +34,18 @@ public class Assets {
     }
 
     public void loadAssets(ScreenManager.ScreenType type) {
+        assetManager.load("images/game.pack", TextureAtlas.class);
+
         switch (type) {
             case MENU:
-                assetManager.load("images/game.pack", TextureAtlas.class);
                 createStandardFont(72);
                 createStandardFont(24);
                 break;
             case GAME:
-                assetManager.load("images/game.pack", TextureAtlas.class);
                 createStandardFont(32);
                 createStandardFont(24);
+                break;
+            case GAMEOVER:
                 break;
         }
     }

@@ -6,6 +6,7 @@ import com.star.app.game.bodies.Asteroid;
 import com.star.app.game.bodies.AsteroidController;
 import com.star.app.game.items.Item;
 import com.star.app.game.items.ItemsController;
+import com.star.app.screen.ScreenManager;
 
 public class GameController {
     private Background background;
@@ -43,6 +44,7 @@ public class GameController {
 
     public void gameOver() {
         isGameOver = true;
+        ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAMEOVER);
     }
 
     public GameController() {

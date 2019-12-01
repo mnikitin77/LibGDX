@@ -1,7 +1,6 @@
 package com.star.app.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.star.app.StarGame;
 import com.star.app.game.Background;
 import com.star.app.screen.utils.Assets;
 import com.star.app.screen.utils.OptionsUtils;
@@ -20,17 +20,19 @@ public class MenuScreen extends AbstractScreen {
     private BitmapFont font72;
     private BitmapFont font24;
     private Stage stage;
+    private StarGame game;
 
-    public MenuScreen(SpriteBatch batch) {
+    public MenuScreen(SpriteBatch batch, StarGame game) {
         super(batch);
+        this.game = game;
     }
 
     @Override
     public void show() {
-        this.background = new Background(null);
-        this.stage = new Stage(ScreenManager.getInstance().getViewport(), batch);
-        this.font72 = Assets.getInstance().getAssetManager().get("fonts/font72.ttf");
-        this.font24 = Assets.getInstance().getAssetManager().get("fonts/font24.ttf");
+        background = new Background(null);
+        stage = new Stage(ScreenManager.getInstance().getViewport(), batch);
+        font72 = Assets.getInstance().getAssetManager().get("fonts/font72.ttf");
+        font24 = Assets.getInstance().getAssetManager().get("fonts/font24.ttf");
 
         Gdx.input.setInputProcessor(stage);
 
@@ -44,8 +46,8 @@ public class MenuScreen extends AbstractScreen {
 
         Button btnNewGame = new TextButton("New Game", textButtonStyle);
         Button btnExitGame = new TextButton("Exit Game", textButtonStyle);
-        btnNewGame.setPosition(480, 210);
-        btnExitGame.setPosition(480, 110);
+        btnNewGame.setPosition(480, 310);
+        btnExitGame.setPosition(480, 210);
 
         btnNewGame.addListener(new ChangeListener() {
             @Override
@@ -63,6 +65,24 @@ public class MenuScreen extends AbstractScreen {
 
         stage.addActor(btnNewGame);
         stage.addActor(btnExitGame);
+
+        if (game.isActive()) {
+            Button btnResumeGame = new TextButton("Resume Game", textButtonStyle);
+            btnResumeGame.setPosition(480, 110);
+
+            btnResumeGame.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (game.isPaused()) {
+                        game.resume();
+                    }
+                    ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
+                }
+            });
+
+            stage.addActor(btnResumeGame);
+        }
+
         skin.dispose();
 
         if (!OptionsUtils.isOptionsExists()) {

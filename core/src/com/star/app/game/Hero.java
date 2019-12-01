@@ -14,9 +14,6 @@ import com.star.app.screen.ScreenManager;
 import com.star.app.screen.utils.Assets;
 import com.star.app.screen.utils.OptionsUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Hero implements Consumable{
     private static final int HERO_HP = 1000;
     private static final float REBOUND_COEFFICIENT = 3.0f;
@@ -50,6 +47,10 @@ public class Hero implements Consumable{
 
     public int getMoneyView() {
         return moneyView;
+    }
+
+    public int getMoney() {
+        return money;
     }
 
     public void addScore(int amount) {

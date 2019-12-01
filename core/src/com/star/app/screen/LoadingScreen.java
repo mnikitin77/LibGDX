@@ -16,7 +16,7 @@ public class LoadingScreen extends AbstractScreen {
         Pixmap pixmap = new Pixmap(1280, 20, Pixmap.Format.RGB888);
         pixmap.setColor(Color.GREEN);
         pixmap.fill();
-        this.texture = new Texture(pixmap);
+        texture = new Texture(pixmap);
         pixmap.dispose();
     }
 
