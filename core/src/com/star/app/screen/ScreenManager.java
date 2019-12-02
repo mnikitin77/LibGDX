@@ -1,5 +1,6 @@
 package com.star.app.screen;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -11,12 +12,12 @@ import com.star.app.screen.utils.Assets;
 
 public class ScreenManager {
     public enum ScreenType {
-        MENU, GAME
+        MENU, GAME, GAMEOVER
     }
 
-    public static final int SCREEN_WIDTH = 1280;
+    public static final int SCREEN_WIDTH = 1920;
     public static final int HALF_SCREEN_WIDTH = SCREEN_WIDTH / 2;
-    public static final int SCREEN_HEIGHT = 720;
+    public static final int SCREEN_HEIGHT = 1080;
     public static final int HALF_SCREEN_HEIGHT = SCREEN_HEIGHT / 2;
 
     private StarGame game;
@@ -24,6 +25,7 @@ public class ScreenManager {
     private LoadingScreen loadingScreen;
     private GameScreen gameScreen;
     private MenuScreen menuScreen;
+    private GameOverScreen gameOverScreen;
     private Screen targetScreen;
     private Viewport viewport;
     private Camera camera;
@@ -48,11 +50,12 @@ public class ScreenManager {
     public void init(StarGame game, SpriteBatch batch) {
         this.game = game;
         this.batch = batch;
-        this.camera = new OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
-        this.viewport = new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera);
-        this.gameScreen = new GameScreen(batch);
-        this.menuScreen = new MenuScreen(batch);
-        this.loadingScreen = new LoadingScreen(batch);
+        camera = new OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
+        viewport = new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera);
+        gameScreen = new GameScreen(batch, game);
+        menuScreen = new MenuScreen(batch, game);
+        gameOverScreen = new GameOverScreen(batch, game);
+        loadingScreen = new LoadingScreen(batch);
     }
 
     public void resize(int width, int height) {
@@ -68,20 +71,29 @@ public class ScreenManager {
 
     public void changeScreen(ScreenType type) {
         Screen screen = game.getScreen();
-        Assets.getInstance().clear();
-        if (screen != null) {
-            screen.dispose();
+        if (type == ScreenType.GAME && !game.isActive()) {
+            Assets.getInstance().clear();
+            if (screen != null) {
+                screen.dispose();
+            }
         }
+        Gdx.input.setInputProcessor(null);
         resetCamera();
         game.setScreen(loadingScreen);
         switch (type) {
             case GAME:
                 targetScreen = gameScreen;
-                Assets.getInstance().loadAssets(ScreenType.GAME);
+                if (!game.isActive()) {
+                    Assets.getInstance().loadAssets(ScreenType.GAME);
+                }
                 break;
             case MENU:
                 targetScreen = menuScreen;
                 Assets.getInstance().loadAssets(ScreenType.MENU);
+                break;
+            case GAMEOVER:
+                targetScreen = gameOverScreen;
+                Assets.getInstance().loadAssets(ScreenType.GAMEOVER);
                 break;
         }
     }

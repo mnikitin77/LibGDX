@@ -14,9 +14,6 @@ import com.star.app.screen.ScreenManager;
 import com.star.app.screen.utils.Assets;
 import com.star.app.screen.utils.OptionsUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Hero implements Consumable{
     private static final int HERO_HP = 1000;
     private static final float REBOUND_COEFFICIENT = 3.0f;
@@ -50,6 +47,10 @@ public class Hero implements Consumable{
 
     public int getMoneyView() {
         return moneyView;
+    }
+
+    public int getMoney() {
+        return money;
     }
 
     public void addScore(int amount) {
@@ -106,11 +107,10 @@ public class Hero implements Consumable{
 //        }
 
         this.currentWeapon = new Weapon(
-                gc, this, "Laser", 0.2f, 1, 600.0f, 300,
+                gc, this, "Laser", 0.2f, 1, 500.0f, 320,
                 new Vector3[]{
-                        new Vector3(28, 0, 0),
-                        new Vector3(28, 90, 0),
-                        new Vector3(28, -90, 0)
+                        new Vector3(24, 90, 0),
+                        new Vector3(24, -90, 0)
                 }
         );
     }
@@ -128,7 +128,7 @@ public class Hero implements Consumable{
         strBuilder.append("BULLETS: ").
                 append(currentWeapon.getCurBullets()).append(" / ").
                 append(currentWeapon.getMaxBullets()).append("\n");
-        font.draw(batch, strBuilder, 20, 700);
+        font.draw(batch, strBuilder, 20, ScreenManager.SCREEN_HEIGHT - 70);
     }
 
     public void update(float dt) {
