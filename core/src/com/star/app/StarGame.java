@@ -25,7 +25,6 @@ public class StarGame extends Game {
     }
 
     public void deactivate() {
-        gc = null;
         isActive = false;
     }
 

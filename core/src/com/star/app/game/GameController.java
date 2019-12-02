@@ -8,6 +8,8 @@ import com.star.app.game.items.Item;
 import com.star.app.game.items.ItemsController;
 import com.star.app.screen.ScreenManager;
 
+import static java.lang.Math.*;
+
 public class GameController {
     private Background background;
     private BulletController bulletController;
@@ -70,6 +72,41 @@ public class GameController {
         }
     }
 
+    public void hit(Hero h, Asteroid a) {
+        // h - 1
+        // a - 2
+        float v1 = h.getVelocity().len();
+        float v2 = a.getVelocity().len();
+
+        float m1 = 0.1f;
+        float m2 = a.getScale();
+
+        float th1 = h.getVelocity().angleRad();
+        float th2 = a.getVelocity().angleRad();
+
+        float phi1 = tmpVec.set(a.getPosition()).
+                sub(h.getPosition()).angleRad();
+        float phi2 = tmpVec.set(h.getPosition()).
+                sub(a.getPosition()).angleRad();
+
+        float v1xN = (float) (((v1 * cos(th1 - phi1) * (m1 - m2) +
+                2 * m2 * v2 * cos(th2 - phi1)) / (m1 + m2)) * cos(phi1) +
+                v1 * sin(th1 - phi1) * cos(phi1 + PI / 2.0f));
+        float v1yN = (float) (((v1 * cos(th1 - phi1) * (m1 - m2) +
+                2 * m2 * v2 * cos(th2 - phi1)) / (m1 + m2)) * sin(phi1) +
+                v1 * sin(th1 - phi1) * sin(phi1 + PI / 2.0f));
+
+        float v2xN = (float) (((v2 * cos(th2 - phi2) * (m2 - m1) +
+                2 * m1 * v1 * cos(th1 - phi2)) / (m2 + m1)) * cos(phi2) +
+                v2 * sin(th2 - phi2) * cos(phi2 + PI / 2.0f));
+        float v2yN = (float) (((v2 * cos(th2 - phi2) * (m2 - m1) +
+                2 * m1 * v1 * cos(th1 - phi2)) / (m2 + m1)) * sin(phi2) +
+                v2 * sin(th2 - phi2) * sin(phi2 + PI / 2.0f));
+
+        h.getVelocity().set(v1xN, v1yN);
+        a.getVelocity().set(v2xN, v2yN);
+    }
+
     public void checkCollisions() {
         // Столкновение корабля с астероидом
         checkActeroidCollisions();
@@ -91,11 +128,7 @@ public class GameController {
                 hero.getPosition().mulAdd(tmpVec, halfOverLen);
                 a.getPosition().mulAdd(tmpVec, -halfOverLen);
 
-                float sumScl = hero.getHitArea().radius * 2 + a.getHitArea().radius;
-
-                hero.getVelocity().mulAdd(tmpVec, 400.0f * halfOverLen * a.getHitArea().radius / sumScl);
-                a.getVelocity().mulAdd(tmpVec, 400.0f * -halfOverLen  * hero.getHitArea().radius / sumScl);
-
+                hit(hero, a);
                 if(a.takeDamage(2)) {
                     hero.addScore(a.getHpMax() * 10);
                 }
