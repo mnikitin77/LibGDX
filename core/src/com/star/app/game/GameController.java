@@ -1,5 +1,6 @@
 package com.star.app.game;
 
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.star.app.game.bodies.Asteroid;
@@ -10,6 +11,8 @@ import com.star.app.screen.ScreenManager;
 import static java.lang.Math.*;
 
 public class GameController {
+    private static final float ITEM_ATTRACT_DISTANCE = 50f;
+
     private Background background;
     private BulletController bulletController;
     private AsteroidController asteroidController;
@@ -19,6 +22,7 @@ public class GameController {
     private Vector2 tmpVec;
     private boolean isActive;
     private boolean isPaused;
+    private Circle itemAttractArea;
 
     public GameController() {
         background = new Background(this);
@@ -30,6 +34,8 @@ public class GameController {
         tmpVec = new Vector2(0.0f, 0.0f);
         isPaused = false;
         isActive = false;
+
+        itemAttractArea = new Circle();
 
         ScreenManager.getInstance().setGc(this);
     }
@@ -197,6 +203,16 @@ public class GameController {
     private void pickUpItems() {
         for (int i = 0; i < itemsController.getActiveList().size(); i++) {
             Item item = itemsController.getActiveList().get(i);
+
+        // Приближаем предмет к герою, если он в зоне притяжения.
+            itemAttractArea.set(item.getPosition(), ITEM_ATTRACT_DISTANCE);
+            if (hero.getHitArea().overlaps(itemAttractArea)) {
+                float dst = item.getPosition().dst(hero.getPosition());
+                tmpVec.set(hero.getPosition()).sub(item.getPosition()).nor();
+                item.getPosition().mulAdd(tmpVec, dst / 2);
+            }
+
+        // Потребляем предмет
             if (hero.getHitArea().overlaps(item.getHitArea())) {
                 item.interact(hero); // Кормим героя предметом.
                 item.deactivate(); // Возвращаем предмет в пул.
