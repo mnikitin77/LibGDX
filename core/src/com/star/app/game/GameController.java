@@ -7,7 +7,6 @@ import com.star.app.game.bodies.AsteroidController;
 import com.star.app.game.items.Item;
 import com.star.app.game.items.ItemsController;
 import com.star.app.screen.ScreenManager;
-
 import static java.lang.Math.*;
 
 public class GameController {
@@ -18,7 +17,46 @@ public class GameController {
     private ItemsController itemsController;
     private Hero hero;
     private Vector2 tmpVec;
-    private boolean isGameOver;
+    private boolean isActive;
+    private boolean isPaused;
+
+    public GameController() {
+        background = new Background(this);
+        hero = new Hero(this, "PLAYER1");
+        bulletController = new BulletController();
+        asteroidController = new AsteroidController(this);
+        particleController = new ParticleController();
+        itemsController = new ItemsController(this);
+        tmpVec = new Vector2(0.0f, 0.0f);
+        isPaused = false;
+        isActive = false;
+
+        ScreenManager.getInstance().setGc(this);
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void activate() {
+        isActive = true;
+    }
+
+    public void deactivate() {
+        isActive = false;
+    }
+
+    public boolean isPaused() {
+        return isPaused;
+    }
+
+    public void pause() {
+        isPaused = true;
+    }
+
+    public void resume() {
+        isPaused = false;
+    }
 
     public BulletController getBulletController() {
         return bulletController;
@@ -44,22 +82,6 @@ public class GameController {
         return hero;
     }
 
-    public void gameOver() {
-        isGameOver = true;
-        ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAMEOVER);
-    }
-
-    public GameController() {
-        background = new Background(this);
-        hero = new Hero(this, "PLAYER1");
-        bulletController = new BulletController();
-        asteroidController = new AsteroidController(this);
-        particleController = new ParticleController();
-        itemsController = new ItemsController(this);
-        tmpVec = new Vector2(0.0f, 0.0f);
-        isGameOver = false;
-    }
-
     public void update(float dt) {
         background.update(dt);
         hero.update(dt);
@@ -67,8 +89,13 @@ public class GameController {
         asteroidController.update(dt);
         itemsController.update(dt);
         particleController.update(dt);
-        if (hero.getHp() > 0 && !isGameOver) {
+
+        if (hero.getHp() > 0) {
             checkCollisions();
+        } else {
+            deactivate(); // Game Over
+            ScreenManager.getInstance().changeScreen(
+                    ScreenManager.ScreenType.GAMEOVER);
         }
     }
 
@@ -123,7 +150,8 @@ public class GameController {
             Asteroid a = asteroidController.getActiveList().get(i);
             if (hero.getHitArea().overlaps(a.getHitArea())) {
                 float dst = a.getPosition().dst(hero.getPosition());
-                float halfOverLen = (a.getHitArea().radius + hero.getHitArea().radius - dst) / 2.0f;
+                float halfOverLen = (a.getHitArea().radius +
+                        hero.getHitArea().radius - dst) / 2.0f;
                 tmpVec.set(hero.getPosition()).sub(a.getPosition()).nor();
                 hero.getPosition().mulAdd(tmpVec, halfOverLen);
                 a.getPosition().mulAdd(tmpVec, -halfOverLen);
@@ -145,8 +173,10 @@ public class GameController {
                 if (a.getHitArea().contains(b.getPosition())) {
 
                     particleController.setup(
-                            b.getPosition().x + MathUtils.random(-4, 4), b.getPosition().y + MathUtils.random(-4, 4),
-                            b.getVelocity().x * -0.3f + MathUtils.random(-30, 30), b.getVelocity().y * -0.3f + MathUtils.random(-30, 30),
+                            b.getPosition().x + MathUtils.random(-4, 4),
+                            b.getPosition().y + MathUtils.random(-4, 4),
+                            b.getVelocity().x * -0.3f + MathUtils.random(-30, 30),
+                            b.getVelocity().y * -0.3f + MathUtils.random(-30, 30),
                             0.2f,
                             2.2f, 1.7f,
                             1.0f, 1.0f, 1.0f, 1.0f,

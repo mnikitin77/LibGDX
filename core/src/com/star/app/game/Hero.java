@@ -15,8 +15,7 @@ import com.star.app.screen.utils.Assets;
 import com.star.app.screen.utils.OptionsUtils;
 
 public class Hero implements Consumable{
-    private static final int HERO_HP = 1000;
-    private static final float REBOUND_COEFFICIENT = 3.0f;
+    private static final int HERO_HP_MAX = 1000;
 
     private GameController gc;
     private TextureRegion texture;
@@ -33,7 +32,6 @@ public class Hero implements Consumable{
     private int money;
     private int moneyView;
     private Circle hitArea;
-    private boolean rightOrLeftSocket;
     private StringBuilder strBuilder;
     private Weapon currentWeapon;
 
@@ -93,18 +91,13 @@ public class Hero implements Consumable{
         velocity = new Vector2(0f, 0f);
         angle = 0.0f;
         enginePower = 750.0f;
-        hp = HERO_HP;
+        hp = HERO_HP_MAX;
         hpView = hp;
         hitArea = new Circle(0f, 0f, texture.getRegionWidth() / 2 * 0.9f);
         strBuilder = new StringBuilder();
         money = 0;
 
         this.keysControl = new KeysControl(OptionsUtils.loadProperties(), keysControlPrefix);
-
-//        List<Vector3> list = new ArrayList<>();
-//        for (int i = 0; i < 11; i++) {
-//            list.add(new Vector3(28, -90 + 18 * i, -90 + 18 * i));
-//        }
 
         this.currentWeapon = new Weapon(
                 gc, this, "Laser", 0.2f, 1, 500.0f, 320,
@@ -123,12 +116,12 @@ public class Hero implements Consumable{
     public void renderGUI(SpriteBatch batch, BitmapFont font) {
         strBuilder.clear();
         strBuilder.append("SCORE: ").append(scoreView).append("\n");
-        strBuilder.append("COINS: ").append(money).append("\n");
-        strBuilder.append("HP: ").append(hp).append("\n");
+        strBuilder.append("COINS: ").append(moneyView).append("\n");
+        strBuilder.append("HP: ").append(hpView).append("\n");
         strBuilder.append("BULLETS: ").
                 append(currentWeapon.getCurBullets()).append(" / ").
                 append(currentWeapon.getMaxBullets()).append("\n");
-        font.draw(batch, strBuilder, 20, ScreenManager.SCREEN_HEIGHT - 70);
+        font.draw(batch, strBuilder, 20, ScreenManager.SCREEN_HEIGHT - 20);
     }
 
     public void update(float dt) {
@@ -188,7 +181,7 @@ public class Hero implements Consumable{
     public boolean takeDamage(int amount) {
         hp -= amount;
         if (hp <= 0) {
-            gc.gameOver();
+            hp = 0;
             return true;
         }
         return false;
@@ -207,8 +200,8 @@ public class Hero implements Consumable{
     @Override
     public void heal(int amount) {
         hp += amount;
-        if (hp > HERO_HP) {
-            hp = HERO_HP;
+        if (hp > HERO_HP_MAX) {
+            hp = HERO_HP_MAX;
         }
     }
 
@@ -245,29 +238,28 @@ public class Hero implements Consumable{
     }
 
     private void updateHP(float dt) {
-        if (hpView >= hp) {
+        // ПОХВАЛИТЬСЯ
+        if (hpView != hp) {
             float hpSpeed = (hpView - hp) / 2.0f;
-            if (hpSpeed < 10.0f) {
-                hpSpeed = 10.0f;
+            if (Math.abs(hpSpeed) < 500.0f) {
+                hpSpeed = hpSpeed / Math.abs(hpSpeed) * 500.0f;
             }
             hpView -= hpSpeed * dt;
-            if (hp <= 0) {
-                hpView = 0;
-            } else if (hpView <= hp) {
-                hpView = hp;
-            }
+        }
+        if (hpView > HERO_HP_MAX || hpView < 0) {
+            hpView = hp;
         }
     }
 
     private void updateMoney(float dt) {
         if (moneyView < money) {
             float moneySpeed = (money - moneyView) / 2.0f;
-            if (moneySpeed < 10.0f) {
-                moneySpeed = 10.0f;
+            if (moneySpeed < 100.0f) {
+                moneySpeed = 100.0f;
             }
-            moneySpeed += moneySpeed * dt;
-            if (moneySpeed > money) {
-                moneySpeed = money;
+            moneyView += moneySpeed * dt;
+            if (moneyView > money) {
+                moneyView = money;
             }
         }
     }

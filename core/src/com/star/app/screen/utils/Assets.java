@@ -46,6 +46,7 @@ public class Assets {
                 createStandardFont(24);
                 break;
             case GAMEOVER:
+                createStandardFont(32);
                 break;
         }
     }

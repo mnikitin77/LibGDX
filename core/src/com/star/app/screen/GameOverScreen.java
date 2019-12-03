@@ -6,24 +6,20 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.StringBuilder;
-import com.star.app.StarGame;
 import com.star.app.game.Background;
 import com.star.app.screen.utils.Assets;
 
 public class GameOverScreen extends AbstractScreen {
     private Background background;
-    private Stage stage;
-    private StarGame game;
     private TextureRegion texture;
     StringBuilder strBuilder;
     BitmapFont font32;
 
-    public GameOverScreen(SpriteBatch batch, StarGame game) {
+
+    public GameOverScreen(SpriteBatch batch) {
         super(batch);
-        this.game = game;
         strBuilder = new StringBuilder();
     }
 
@@ -41,7 +37,7 @@ public class GameOverScreen extends AbstractScreen {
                 Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             ScreenManager.getInstance().changeScreen(
                     ScreenManager.ScreenType.MENU);
-            game.deactivate();
+            ScreenManager.getInstance().getGc().deactivate();
         }
     }
 
@@ -53,14 +49,16 @@ public class GameOverScreen extends AbstractScreen {
         batch.begin();
         background.render(batch);
         batch.draw(texture,
-                ScreenManager.HALF_SCREEN_WIDTH - texture.getRegionWidth() / 2,
-                ScreenManager.HALF_SCREEN_HEIGHT - texture.getRegionHeight() / 2);
+                ScreenManager.HALF_SCREEN_WIDTH -
+                        texture.getRegionWidth() / 2,
+                ScreenManager.HALF_SCREEN_HEIGHT -
+                        texture.getRegionHeight() / 2);
 
         strBuilder.clear();
-        strBuilder.append("SCORE: ").
-                append(game.getGc().getHero().getScore()).append("\n");
-        strBuilder.append("COINS: ").
-                append(game.getGc().getHero().getMoney()).append("\n");
+        strBuilder.append("SCORE: ").append(ScreenManager.getInstance().
+                getGc().getHero().getScore()).append("\n");
+        strBuilder.append("COINS: ").append(ScreenManager.getInstance().
+                getGc().getHero().getMoney()).append("\n");
         font32.draw(batch, strBuilder,
                 ScreenManager.HALF_SCREEN_WIDTH
                         - texture.getRegionWidth() / 2,

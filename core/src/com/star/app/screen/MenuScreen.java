@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import com.star.app.StarGame;
 import com.star.app.game.Background;
 import com.star.app.screen.utils.Assets;
 import com.star.app.screen.utils.OptionsUtils;
@@ -21,11 +20,9 @@ public class MenuScreen extends AbstractScreen {
     private BitmapFont font72;
     private BitmapFont font24;
     private Stage stage;
-    private StarGame game;
 
-    public MenuScreen(SpriteBatch batch, StarGame game) {
+    public MenuScreen(SpriteBatch batch) {
         super(batch);
-        this.game = game;
     }
 
     @Override
@@ -57,7 +54,11 @@ public class MenuScreen extends AbstractScreen {
         btnNewGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
+                if (ScreenManager.getInstance().getGc() != null) {
+                    ScreenManager.getInstance().getGc().deactivate();
+                }
+                ScreenManager.getInstance().changeScreen(
+                        ScreenManager.ScreenType.GAME);
             }
         });
 
@@ -71,19 +72,23 @@ public class MenuScreen extends AbstractScreen {
         stage.addActor(btnNewGame);
         stage.addActor(btnExitGame);
 
-        if (game.isActive()) {
-            Button btnResumeGame = new TextButton("Resume Game", textButtonStyle);
+        if (ScreenManager.getInstance().getGc() != null &&
+                ScreenManager.getInstance().getGc().isActive()) {
+            Button btnResumeGame =
+                    new TextButton("Resume Game", textButtonStyle);
             btnResumeGame.setPosition(
-                    ScreenManager.HALF_SCREEN_WIDTH - btnExitGame.getWidth() / 2,
+                    ScreenManager.HALF_SCREEN_WIDTH -
+                            btnExitGame.getWidth() / 2,
                     ScreenManager.HALF_SCREEN_HEIGHT - 400);
 
             btnResumeGame.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    if (game.isPaused()) {
-                        game.resume();
+                    if (ScreenManager.getInstance().getGc().isPaused()) {
+                        ScreenManager.getInstance().getGc().resume();
                     }
-                    ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
+                    ScreenManager.getInstance().changeScreen(
+                            ScreenManager.ScreenType.GAME);
                 }
             });
 
@@ -109,8 +114,13 @@ public class MenuScreen extends AbstractScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         background.render(batch);
-        font72.draw(batch, "Star Game 2019", 0, ScreenManager.HALF_SCREEN_HEIGHT,
-                ScreenManager.SCREEN_WIDTH, Align.center, false);
+        font72.draw(batch,
+                "Star Game 2019",
+                0,
+                ScreenManager.HALF_SCREEN_HEIGHT,
+                ScreenManager.SCREEN_WIDTH,
+                Align.center,
+                false);
         batch.end();
         stage.draw();
     }

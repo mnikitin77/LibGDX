@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.star.app.StarGame;
 import com.star.app.game.GameController;
 import com.star.app.game.WorldRenderer;
 import com.star.app.screen.utils.Assets;
@@ -19,17 +18,16 @@ public class GameScreen extends AbstractScreen {
     private WorldRenderer worldRenderer;
     private BitmapFont font24;
     private Stage stage;
-    private StarGame game;
 
-    public GameScreen(SpriteBatch batch, StarGame game) {
+    public GameScreen(SpriteBatch batch) {
         super(batch);
-        this.game = game;
     }
 
     @Override
     public void show() {
         // Если игра была начата ранее, не проводим инициализацию заново.
-        if (game.isActive()) {
+        if (ScreenManager.getInstance().getGc() != null &&
+                ScreenManager.getInstance().getGc().isActive()) {
             Gdx.input.setInputProcessor(stage);
             return;
         }
@@ -62,12 +60,12 @@ public class GameScreen extends AbstractScreen {
         btnPause.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (game.isPaused()) {
+                if (ScreenManager.getInstance().getGc().isPaused()) {
                     ((TextButton)btnPause).setText("Pause");
-                    game.resume();
+                    ScreenManager.getInstance().getGc().resume();
                 } else {
                     ((TextButton)btnPause).setText("Resume");
-                    game.pause();
+                    ScreenManager.getInstance().getGc().pause();
                 }
             }
         });
@@ -75,7 +73,7 @@ public class GameScreen extends AbstractScreen {
         btnMenu.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.pause();
+                ScreenManager.getInstance().getGc().pause();
                 ScreenManager.getInstance().changeScreen(
                         ScreenManager.ScreenType.MENU);
             }
@@ -86,7 +84,7 @@ public class GameScreen extends AbstractScreen {
         skin.dispose();
 
     // Активируем игру
-        game.activate(gameController);
+        ScreenManager.getInstance().getGc().activate();
     }
 
     public void update(float dt) {
@@ -95,7 +93,7 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void render(float delta) {
-        if (!game.isPaused()) {
+        if (!ScreenManager.getInstance().getGc().isPaused()) {
             gameController.update(delta);
         }
         worldRenderer.render();

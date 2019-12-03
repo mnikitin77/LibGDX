@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.star.app.StarGame;
+import com.star.app.game.GameController;
 import com.star.app.screen.utils.Assets;
 
 public class ScreenManager {
@@ -29,6 +30,7 @@ public class ScreenManager {
     private Screen targetScreen;
     private Viewport viewport;
     private Camera camera;
+    private GameController gc;
 
     private static ScreenManager ourInstance = new ScreenManager();
 
@@ -44,6 +46,14 @@ public class ScreenManager {
         return camera;
     }
 
+    public GameController getGc() {
+        return gc;
+    }
+
+    public void setGc(GameController gc) {
+        this.gc = gc;
+    }
+
     private ScreenManager() {
     }
 
@@ -52,10 +62,12 @@ public class ScreenManager {
         this.batch = batch;
         camera = new OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
         viewport = new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera);
-        gameScreen = new GameScreen(batch, game);
-        menuScreen = new MenuScreen(batch, game);
-        gameOverScreen = new GameOverScreen(batch, game);
+        gameScreen = new GameScreen(batch);
+        menuScreen = new MenuScreen(batch);
+        gameOverScreen = new GameOverScreen(batch);
         loadingScreen = new LoadingScreen(batch);
+
+        gc = null;
     }
 
     public void resize(int width, int height) {
@@ -71,11 +83,12 @@ public class ScreenManager {
 
     public void changeScreen(ScreenType type) {
         Screen screen = game.getScreen();
-        if (type == ScreenType.GAME && !game.isActive()) {
+        if ((type == ScreenType.GAME && gc != null && !gc.isActive()) ||
+                type != ScreenType.GAME) {
             Assets.getInstance().clear();
-            if (screen != null) {
-                screen.dispose();
-            }
+        }
+        if (screen != null) {
+            screen.dispose();
         }
         Gdx.input.setInputProcessor(null);
         resetCamera();
@@ -83,7 +96,7 @@ public class ScreenManager {
         switch (type) {
             case GAME:
                 targetScreen = gameScreen;
-                if (!game.isActive()) {
+                if (gc == null || !gc.isActive()) {
                     Assets.getInstance().loadAssets(ScreenType.GAME);
                 }
                 break;
