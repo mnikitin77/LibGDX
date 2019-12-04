@@ -11,6 +11,8 @@ import com.star.app.screen.ScreenManager;
 import static java.lang.Math.*;
 
 public class GameController {
+    public static final int LEVEL_FINISHED_DELAY = 200;
+
     private static final float ITEM_ATTRACT_DISTANCE = 50f;
 
     private Background background;
@@ -23,8 +25,15 @@ public class GameController {
     private boolean isActive;
     private boolean isPaused;
     private Circle itemAttractArea;
+    private int level;
+    private boolean isLevelFinished;
 
     public GameController() {
+        isPaused = false;
+        isActive = false;
+        isLevelFinished = false;
+        level = 1;
+
         background = new Background(this);
         hero = new Hero(this, "PLAYER1");
         bulletController = new BulletController();
@@ -32,9 +41,6 @@ public class GameController {
         particleController = new ParticleController();
         itemsController = new ItemsController(this);
         tmpVec = new Vector2(0.0f, 0.0f);
-        isPaused = false;
-        isActive = false;
-
         itemAttractArea = new Circle();
 
         ScreenManager.getInstance().setGc(this);
@@ -88,6 +94,28 @@ public class GameController {
         return hero;
     }
 
+    public boolean isLevelFinished() {
+        return isLevelFinished;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void levelUp() {
+        level++;
+
+        // Обновляем игрока
+        hero.initialize();
+        // Обновляем астероиды
+        asteroidController.clear();
+        asteroidController.initialize();
+        // Убираем несобранные предметы
+        itemsController.clear();
+
+        isLevelFinished = false;
+    }
+
     public void update(float dt) {
         background.update(dt);
         hero.update(dt);
@@ -97,7 +125,12 @@ public class GameController {
         particleController.update(dt);
 
         if (hero.getHp() > 0) {
+            // Проверяем столкновение героя с объектами.
             checkCollisions();
+            // проверяем на завершение уровня.
+            if (checkWin()) {
+                isLevelFinished = true; // Уровень завершён!
+            }
         } else {
             deactivate(); // Game Over
             ScreenManager.getInstance().changeScreen(
@@ -151,6 +184,10 @@ public class GameController {
         pickUpItems();
     }
 
+    private boolean checkWin() {
+        return asteroidController.getActiveList().size() <= 0;
+    }
+
     private void checkActeroidCollisions() {
         for (int i = 0; i < asteroidController.getActiveList().size(); i++) {
             Asteroid a = asteroidController.getActiveList().get(i);
@@ -166,7 +203,8 @@ public class GameController {
                 if(a.takeDamage(2)) {
                     hero.addScore(a.getHpMax() * 10);
                 }
-                hero.takeDamage(a.getWeight() * 20);
+                //hero.takeDamage(a.getWeight() * 20);
+                hero.takeDamage(a.getHitPoints());
             }
         }
     }
@@ -191,7 +229,7 @@ public class GameController {
 
                     b.deactivate(); // Считаем, что одним зарядом можем
                     // убить только один астероид.
-                    if (a.takeDamage(1)) {
+                    if (a.takeDamage(10)) {
                         hero.addScore(a.getHpMax() * 100);
                     }
                     break;

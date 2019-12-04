@@ -10,9 +10,11 @@ import com.star.app.game.helpers.Poolable;
 import com.star.app.screen.ScreenManager;
 
 public class Asteroid extends SpaceBody implements Poolable {
-    private final static int MAX_WEIGHT = 10;
-    private final static int MIN_WEIGHT = 1;
+    private final static float MAX_WEIGHT = 10f;
+    private final static float MIN_WEIGHT = 1f;
     private final static int LOWEST_SPEED = 120;
+    private final static int BASE_ASTEROID_HP = 100;
+    private final static int BASE_ASTEROID_DAMAGE = 20;
     private final static float ITEM_THROW_PROBABILITY = 0.25f;
 
     private GameController gc;
@@ -27,7 +29,7 @@ public class Asteroid extends SpaceBody implements Poolable {
 
     private boolean active;
 
-    public Asteroid(GameController gc, TextureRegion texture, int weight)
+    public Asteroid(GameController gc, TextureRegion texture, float weight)
             throws IllegalArgumentException {
         if (weight < MIN_WEIGHT || weight > MAX_WEIGHT) {
             throw new IllegalArgumentException(
@@ -49,6 +51,7 @@ public class Asteroid extends SpaceBody implements Poolable {
         velocity = new Vector2();
         rotAngle = 0;
         hitArea = new Circle();
+        hitPoints = 0;
 
         active = false;
     }
@@ -83,11 +86,15 @@ public class Asteroid extends SpaceBody implements Poolable {
     public void activate(float x, float y, float vx, float vy, float scale) {
         position.set(x, y);
         velocity.set(vx, vy);
-        hpMax = (int)(10 * this.scale);
-        hp = this.hpMax;
+        weight *= scale;
+        hpMax = (int)(BASE_ASTEROID_HP * scale *
+                (1 + (float)Math.log10(gc.getLevel())));
+        hp = hpMax;
         hitArea.setPosition(position);
         this.scale = scale;
         hitArea.setRadius(width / 2 * 0.9f);
+        hitPoints = (int)(weight * BASE_ASTEROID_DAMAGE *
+                (1 + (float)Math.log10(gc.getLevel())));
 
         active = true;
     }
@@ -142,6 +149,8 @@ public class Asteroid extends SpaceBody implements Poolable {
                             position.x, position.y, 0f, 0f, 1.0f);
                 }
             }
+            // Возвращаем убитых в пул
+            gc.getAsteroidController().checkPool();
             return true;
         }
         return false;

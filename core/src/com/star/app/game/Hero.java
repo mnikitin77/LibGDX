@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.star.app.screen.ScreenManager;
 import com.star.app.screen.utils.Assets;
@@ -16,6 +17,7 @@ import com.star.app.screen.utils.OptionsUtils;
 
 public class Hero implements Consumable{
     private static final int HERO_HP_MAX = 1000;
+    private static final int HERO_AMMO_MAX = 300;
 
     private GameController gc;
     private TextureRegion texture;
@@ -34,18 +36,8 @@ public class Hero implements Consumable{
     private Circle hitArea;
     private StringBuilder strBuilder;
     private Weapon currentWeapon;
+    private int levelFinishedTimer;
 
-    public int getScoreView() {
-        return scoreView;
-    }
-
-    public int getHPView() {
-        return hpView;
-    }
-
-    public int getMoneyView() {
-        return moneyView;
-    }
 
     public int getMoney() {
         return money;
@@ -57,10 +49,6 @@ public class Hero implements Consumable{
 
     public int getScore() {
         return score;
-    }
-
-    public void takeHP(int amount) {
-        hp -= amount;
     }
 
     public int getHp() {
@@ -96,11 +84,13 @@ public class Hero implements Consumable{
         hitArea = new Circle(0f, 0f, texture.getRegionWidth() / 2 * 0.9f);
         strBuilder = new StringBuilder();
         money = 0;
+        levelFinishedTimer = 0;
 
-        this.keysControl = new KeysControl(OptionsUtils.loadProperties(), keysControlPrefix);
+        keysControl = new KeysControl(OptionsUtils.loadProperties(), keysControlPrefix);
 
-        this.currentWeapon = new Weapon(
-                gc, this, "Laser", 0.2f, 1, 500.0f, 320,
+        currentWeapon = new Weapon(
+                gc, this, "Laser", 0.2f,
+                1, 500.0f, HERO_AMMO_MAX,
                 new Vector3[]{
                         new Vector3(24, 90, 0),
                         new Vector3(24, -90, 0)
@@ -108,20 +98,40 @@ public class Hero implements Consumable{
         );
     }
 
+    public void initialize() {
+        hp = HERO_HP_MAX;
+        hpView = hp;
+        currentWeapon.recharge(HERO_AMMO_MAX);
+        position.set(ScreenManager.SCREEN_WIDTH / 2,
+                ScreenManager.SCREEN_HEIGHT / 2);
+    }
+
     public void render(SpriteBatch batch) {
         batch.draw(texture, position.x - 32, position.y - 32, 32, 32,
                 64, 64, 1, 1, angle);
     }
 
-    public void renderGUI(SpriteBatch batch, BitmapFont font) {
+    public void renderGUI(SpriteBatch batch, BitmapFont... font) {
         strBuilder.clear();
+        strBuilder.append("LEVEL: ").append(gc.getLevel()).append("\n");
         strBuilder.append("SCORE: ").append(scoreView).append("\n");
         strBuilder.append("COINS: ").append(moneyView).append("\n");
         strBuilder.append("HP: ").append(hpView).append("\n");
         strBuilder.append("BULLETS: ").
                 append(currentWeapon.getCurBullets()).append(" / ").
                 append(currentWeapon.getMaxBullets()).append("\n");
-        font.draw(batch, strBuilder, 20, ScreenManager.SCREEN_HEIGHT - 20);
+        font[0].draw(batch, strBuilder, 20, ScreenManager.SCREEN_HEIGHT - 20);
+
+        if (gc.isLevelFinished() &&
+                levelFinishedTimer <= gc.LEVEL_FINISHED_DELAY) {
+            strBuilder.clear();
+            strBuilder.append("Level ").
+                    append(gc.getLevel()).append(" finished.\n");
+            font[1].draw(batch, strBuilder, 0,
+                    ScreenManager.HALF_SCREEN_HEIGHT,
+                    ScreenManager.SCREEN_WIDTH,
+                    Align.center, false);
+        }
     }
 
     public void update(float dt) {
@@ -133,37 +143,48 @@ public class Hero implements Consumable{
         updateScore(dt);
         updateMoney(dt);
 
-        fireTimer += dt;
-        if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-            tryToFire();
-        }
+        if (gc.isLevelFinished()) {
+            // !!! НЕ СМОГ СДЕЛАТЬ ЧЕРЕЗ dt !!!
+            levelFinishedTimer += 1;
+            if (levelFinishedTimer > gc.LEVEL_FINISHED_DELAY) {
+                System.out.println(levelFinishedTimer);
+                // Даём команду на переход на следующий уровень.
+                gc.levelUp();
+                levelFinishedTimer = 0;
+            }
+        } else {
+            fireTimer += dt;
+            if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+                tryToFire();
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            angle += 180.0f * dt;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            angle -= 180.0f * dt;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            velocity.x += (float) Math.cos(Math.toRadians(angle)) *
-                    enginePower * dt;
-            velocity.y += (float) Math.sin(Math.toRadians(angle)) *
-                    enginePower * dt;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            velocity.x -= (float) Math.cos(Math.toRadians(angle)) *
-                    enginePower * dt;
-            velocity.y -= (float) Math.sin(Math.toRadians(angle)) *
-                    enginePower * dt;
-        }
+            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+                angle += 180.0f * dt;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                angle -= 180.0f * dt;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                velocity.x += (float) Math.cos(Math.toRadians(angle)) *
+                        enginePower * dt;
+                velocity.y += (float) Math.sin(Math.toRadians(angle)) *
+                        enginePower * dt;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+                velocity.x -= (float) Math.cos(Math.toRadians(angle)) *
+                        enginePower * dt;
+                velocity.y -= (float) Math.sin(Math.toRadians(angle)) *
+                        enginePower * dt;
+            }
 
-        position.mulAdd(velocity, dt);
+            position.mulAdd(velocity, dt);
 
-        float stopKoef = 1.0f - 2.0f * dt;
-        if (stopKoef < 0.0f) {
-            stopKoef = 0.0f;
+            float stopKoef = 1.0f - 2.0f * dt;
+            if (stopKoef < 0.0f) {
+                stopKoef = 0.0f;
+            }
+            velocity.scl(stopKoef);
         }
-        velocity.scl(stopKoef);
 
         exhaust();
         checkSpaceBorders();

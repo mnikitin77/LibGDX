@@ -9,18 +9,22 @@ import com.star.app.screen.utils.Assets;
 
 public class AsteroidController extends ObjectPool<Asteroid> {
     private GameController gc;
-    private static final int ASTEROIDS_COUNT = 3;
+    //private static final int ASTEROIDS_COUNT = 3;
+    private static final int ASTEROIDS_COUNT = 2;
     protected TextureRegion asteroidTexture;
 
     @Override
     protected Asteroid newObject() {
-        return new Asteroid(gc, asteroidTexture, MathUtils.random(5, 10));
+        return new Asteroid(gc, asteroidTexture, MathUtils.random(5f, 10f));
     }
 
     public AsteroidController(GameController gc) {
         this.gc = gc;
         asteroidTexture = Assets.getInstance().getAtlas().findRegion("asteroid");
+        initialize();
+    }
 
+    public void initialize() {
         for (int i = 0; i < ASTEROIDS_COUNT; i++) {
             getActiveElement().activate(0f,0f,0f,0f);
         }
@@ -40,6 +44,6 @@ public class AsteroidController extends ObjectPool<Asteroid> {
         for (int i = 0; i < activeList.size(); i++) {
             activeList.get(i).update(dt);
         }
-        checkPool();
+        //checkPool();
     }
 }
