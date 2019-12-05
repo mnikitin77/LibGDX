@@ -1,6 +1,5 @@
 package com.star.app.game.bodies;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
@@ -10,7 +9,8 @@ public abstract class SpaceBody {
     protected float rotAngle;
     protected int height;
     protected int width;
-    protected int weight;
+    protected float weight;
+    protected int hitPoints;
 
     public int getHeight() {
         return height;
@@ -20,7 +20,7 @@ public abstract class SpaceBody {
         return width;
     }
 
-    public int getWeight() {
+    public float getWeight() {
         return weight;
     }
 
@@ -30,6 +30,10 @@ public abstract class SpaceBody {
 
     public Vector2 getVelocity() {
         return velocity;
+    }
+
+    public int getHitPoints() {
+        return hitPoints;
     }
 
     public abstract void render(SpriteBatch batch);

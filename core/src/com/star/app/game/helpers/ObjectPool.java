@@ -50,4 +50,9 @@ public abstract class ObjectPool<T extends Poolable> {
             }
         }
     }
+
+    public void clear() {
+        activeList.clear();
+        freeList.clear();
+    }
 }

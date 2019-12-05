@@ -42,6 +42,7 @@ public class Assets {
                 createStandardFont(24);
                 break;
             case GAME:
+                createStandardFont(72);
                 createStandardFont(32);
                 createStandardFont(24);
                 break;

@@ -1,5 +1,6 @@
 package com.star.app.game;
 
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.star.app.game.bodies.Asteroid;
@@ -10,6 +11,10 @@ import com.star.app.screen.ScreenManager;
 import static java.lang.Math.*;
 
 public class GameController {
+    public static final int LEVEL_FINISHED_DELAY = 200;
+
+    private static final float ITEM_ATTRACT_DISTANCE = 50f;
+
     private Background background;
     private BulletController bulletController;
     private AsteroidController asteroidController;
@@ -19,8 +24,16 @@ public class GameController {
     private Vector2 tmpVec;
     private boolean isActive;
     private boolean isPaused;
+    private Circle itemAttractArea;
+    private int level;
+    private boolean isLevelFinished;
 
     public GameController() {
+        isPaused = false;
+        isActive = false;
+        isLevelFinished = false;
+        level = 1;
+
         background = new Background(this);
         hero = new Hero(this, "PLAYER1");
         bulletController = new BulletController();
@@ -28,8 +41,7 @@ public class GameController {
         particleController = new ParticleController();
         itemsController = new ItemsController(this);
         tmpVec = new Vector2(0.0f, 0.0f);
-        isPaused = false;
-        isActive = false;
+        itemAttractArea = new Circle();
 
         ScreenManager.getInstance().setGc(this);
     }
@@ -82,6 +94,28 @@ public class GameController {
         return hero;
     }
 
+    public boolean isLevelFinished() {
+        return isLevelFinished;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void levelUp() {
+        level++;
+
+        // Обновляем игрока
+        hero.initialize();
+        // Обновляем астероиды
+        asteroidController.clear();
+        asteroidController.initialize();
+        // Убираем несобранные предметы
+        itemsController.clear();
+
+        isLevelFinished = false;
+    }
+
     public void update(float dt) {
         background.update(dt);
         hero.update(dt);
@@ -91,7 +125,12 @@ public class GameController {
         particleController.update(dt);
 
         if (hero.getHp() > 0) {
+            // Проверяем столкновение героя с объектами.
             checkCollisions();
+            // проверяем на завершение уровня.
+            if (checkWin()) {
+                isLevelFinished = true; // Уровень завершён!
+            }
         } else {
             deactivate(); // Game Over
             ScreenManager.getInstance().changeScreen(
@@ -145,6 +184,10 @@ public class GameController {
         pickUpItems();
     }
 
+    private boolean checkWin() {
+        return asteroidController.getActiveList().size() <= 0;
+    }
+
     private void checkActeroidCollisions() {
         for (int i = 0; i < asteroidController.getActiveList().size(); i++) {
             Asteroid a = asteroidController.getActiveList().get(i);
@@ -160,7 +203,8 @@ public class GameController {
                 if(a.takeDamage(2)) {
                     hero.addScore(a.getHpMax() * 10);
                 }
-                hero.takeDamage(a.getWeight() * 20);
+                //hero.takeDamage(a.getWeight() * 20);
+                hero.takeDamage(a.getHitPoints());
             }
         }
     }
@@ -185,7 +229,7 @@ public class GameController {
 
                     b.deactivate(); // Считаем, что одним зарядом можем
                     // убить только один астероид.
-                    if (a.takeDamage(1)) {
+                    if (a.takeDamage(10)) {
                         hero.addScore(a.getHpMax() * 100);
                     }
                     break;
@@ -197,6 +241,16 @@ public class GameController {
     private void pickUpItems() {
         for (int i = 0; i < itemsController.getActiveList().size(); i++) {
             Item item = itemsController.getActiveList().get(i);
+
+        // Приближаем предмет к герою, если он в зоне притяжения.
+            itemAttractArea.set(item.getPosition(), ITEM_ATTRACT_DISTANCE);
+            if (hero.getHitArea().overlaps(itemAttractArea)) {
+                float dst = item.getPosition().dst(hero.getPosition());
+                tmpVec.set(hero.getPosition()).sub(item.getPosition()).nor();
+                item.getPosition().mulAdd(tmpVec, dst / 2);
+            }
+
+        // Потребляем предмет
             if (hero.getHitArea().overlaps(item.getHitArea())) {
                 item.interact(hero); // Кормим героя предметом.
                 item.deactivate(); // Возвращаем предмет в пул.
