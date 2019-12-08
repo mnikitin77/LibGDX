@@ -2,6 +2,7 @@ package com.star.app.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,9 +15,9 @@ import com.star.app.screen.utils.Assets;
 public class GameOverScreen extends AbstractScreen {
     private Background background;
     private TextureRegion texture;
-    StringBuilder strBuilder;
-    BitmapFont font32;
-
+    private StringBuilder strBuilder;
+    private BitmapFont font32;
+    private Sound gameOverSound;
 
     public GameOverScreen(SpriteBatch batch) {
         super(batch);
@@ -29,6 +30,8 @@ public class GameOverScreen extends AbstractScreen {
         texture = Assets.getInstance().getAtlas().findRegion("gameover");
         font32 = Assets.getInstance().getAssetManager().get(
                 "fonts/font32.ttf", BitmapFont.class);
+        gameOverSound = Assets.getInstance().getAssetManager().get("audio/GameOver.mp3");
+        gameOverSound.play();
     }
 
     public void update(float dt) {
