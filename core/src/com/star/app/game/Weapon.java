@@ -1,8 +1,9 @@
 package com.star.app.game;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.star.app.screen.utils.Assets;
 
 public class Weapon {
 
@@ -14,6 +15,7 @@ public class Weapon {
     private float bulletSpeed;
     private int maxBullets;
     private int curBullets;
+    private Sound shootSound;
 
     // Когда мы описываем слот Vector3[] slots:
     //   x - это то на сколько пикселей он смещен относительно центра
@@ -42,13 +44,15 @@ public class Weapon {
         this.damage = damage;
         this.bulletSpeed = bulletSpeed;
         this.maxBullets = maxBullets;
-        this.curBullets = this.maxBullets;
+        curBullets = this.maxBullets;
         this.slots = slots;
+        shootSound = Assets.getInstance().getAssetManager().get("audio/Shoot.mp3");
     }
 
     public void fire() {
         if (curBullets > 0) {
             curBullets--;
+            shootSound.play();
 
             for (int i = 0; i < slots.length; i++) {
                 float x, y, vx, vy;

@@ -26,15 +26,19 @@ public class GameScreen extends AbstractScreen {
     @Override
     public void show() {
         // Если игра была начата ранее, не проводим инициализацию заново.
-        if (ScreenManager.getInstance().getGc() != null &&
-                ScreenManager.getInstance().getGc().isActive()) {
-            Gdx.input.setInputProcessor(stage);
-            return;
-        }
+//        if (ScreenManager.getInstance().getGc() != null &&
+//                ScreenManager.getInstance().getGc().isActive()) {
+//            Assets.getInstance().loadAssets(ScreenManager.ScreenType.GAME);
+//            Gdx.input.setInputProcessor(stage);
+//            return;
+//        }
 
         Assets.getInstance().loadAssets(ScreenManager.ScreenType.GAME);
-        gameController = new GameController();
-        worldRenderer = new WorldRenderer(gameController, batch);
+//        if (ScreenManager.getInstance().getGc() == null ||
+//                !ScreenManager.getInstance().getGc().isActive()) {
+            gameController = new GameController();
+            worldRenderer = new WorldRenderer(gameController, batch);
+//        }
 
         stage = new Stage(ScreenManager.getInstance().getViewport(), batch);
         font24 = Assets.getInstance().getAssetManager().get("fonts/font24.ttf");
@@ -89,13 +93,14 @@ public class GameScreen extends AbstractScreen {
 
     public void update(float dt) {
         stage.act(dt);
+        if (!ScreenManager.getInstance().getGc().isPaused()) {
+            gameController.update(dt);
+        }
     }
 
     @Override
     public void render(float delta) {
-        if (!ScreenManager.getInstance().getGc().isPaused()) {
-            gameController.update(delta);
-        }
+        update(delta);
         worldRenderer.render();
         stage.draw();
     }

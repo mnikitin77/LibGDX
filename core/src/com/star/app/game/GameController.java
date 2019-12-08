@@ -11,8 +11,7 @@ import com.star.app.screen.ScreenManager;
 import static java.lang.Math.*;
 
 public class GameController {
-    public static final int LEVEL_FINISHED_DELAY = 200;
-
+    public static final float NEW_LEVEL_TIMER = 3.0f;
     private static final float ITEM_ATTRACT_DISTANCE = 50f;
 
     private Background background;
@@ -27,12 +26,14 @@ public class GameController {
     private Circle itemAttractArea;
     private int level;
     private boolean isLevelFinished;
+    private float newLevelMsgTimer;
 
     public GameController() {
         isPaused = false;
         isActive = false;
         isLevelFinished = false;
         level = 1;
+        newLevelMsgTimer = NEW_LEVEL_TIMER;
 
         background = new Background(this);
         hero = new Hero(this, "PLAYER1");
@@ -94,16 +95,17 @@ public class GameController {
         return hero;
     }
 
-    public boolean isLevelFinished() {
-        return isLevelFinished;
-    }
-
     public int getLevel() {
         return level;
     }
 
+    public float getNewLevelMsgTimer() {
+        return newLevelMsgTimer;
+    }
+
     public void levelUp() {
         level++;
+        newLevelMsgTimer = NEW_LEVEL_TIMER;
 
         // Обновляем игрока
         hero.initialize();
@@ -117,6 +119,10 @@ public class GameController {
     }
 
     public void update(float dt) {
+        if (newLevelMsgTimer > 0f) {
+            newLevelMsgTimer -= dt;
+        }
+
         background.update(dt);
         hero.update(dt);
         bulletController.update(dt);
@@ -135,6 +141,10 @@ public class GameController {
             deactivate(); // Game Over
             ScreenManager.getInstance().changeScreen(
                     ScreenManager.ScreenType.GAMEOVER);
+        }
+
+        if (isLevelFinished) {
+            levelUp();
         }
     }
 

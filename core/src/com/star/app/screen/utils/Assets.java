@@ -3,6 +3,7 @@ package com.star.app.screen.utils;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -35,7 +36,6 @@ public class Assets {
 
     public void loadAssets(ScreenManager.ScreenType type) {
         assetManager.load("images/game.pack", TextureAtlas.class);
-
         switch (type) {
             case MENU:
                 createStandardFont(72);
@@ -45,6 +45,7 @@ public class Assets {
                 createStandardFont(72);
                 createStandardFont(32);
                 createStandardFont(24);
+                assetManager.load("audio/Shoot.mp3", Sound.class);
                 break;
             case GAMEOVER:
                 createStandardFont(32);

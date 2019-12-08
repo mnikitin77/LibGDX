@@ -83,10 +83,10 @@ public class ScreenManager {
 
     public void changeScreen(ScreenType type) {
         Screen screen = game.getScreen();
-        if ((type == ScreenType.GAME && gc != null && !gc.isActive()) ||
-                type != ScreenType.GAME) {
+//        if ((type == ScreenType.GAME && gc != null && !gc.isActive()) ||
+//                type != ScreenType.GAME) {
             Assets.getInstance().clear();
-        }
+//        }
         if (screen != null) {
             screen.dispose();
         }
@@ -96,9 +96,9 @@ public class ScreenManager {
         switch (type) {
             case GAME:
                 targetScreen = gameScreen;
-                if (gc == null || !gc.isActive()) {
+                //if (gc == null || !gc.isActive()) {
                     Assets.getInstance().loadAssets(ScreenType.GAME);
-                }
+                //}
                 break;
             case MENU:
                 targetScreen = menuScreen;

@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.star.app.screen.ScreenManager;
 import com.star.app.screen.utils.Assets;
@@ -121,17 +120,6 @@ public class Hero implements Consumable{
                 append(currentWeapon.getCurBullets()).append(" / ").
                 append(currentWeapon.getMaxBullets()).append("\n");
         font[0].draw(batch, strBuilder, 20, ScreenManager.SCREEN_HEIGHT - 20);
-
-        if (gc.isLevelFinished() &&
-                levelFinishedTimer <= gc.LEVEL_FINISHED_DELAY) {
-            strBuilder.clear();
-            strBuilder.append("Level ").
-                    append(gc.getLevel()).append(" finished.\n");
-            font[1].draw(batch, strBuilder, 0,
-                    ScreenManager.HALF_SCREEN_HEIGHT,
-                    ScreenManager.SCREEN_WIDTH,
-                    Align.center, false);
-        }
     }
 
     public void update(float dt) {
@@ -143,48 +131,37 @@ public class Hero implements Consumable{
         updateScore(dt);
         updateMoney(dt);
 
-        if (gc.isLevelFinished()) {
-            // !!! НЕ СМОГ СДЕЛАТЬ ЧЕРЕЗ dt !!!
-            levelFinishedTimer += 1;
-            if (levelFinishedTimer > gc.LEVEL_FINISHED_DELAY) {
-                System.out.println(levelFinishedTimer);
-                // Даём команду на переход на следующий уровень.
-                gc.levelUp();
-                levelFinishedTimer = 0;
-            }
-        } else {
-            fireTimer += dt;
-            if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-                tryToFire();
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                angle += 180.0f * dt;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                angle -= 180.0f * dt;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                velocity.x += (float) Math.cos(Math.toRadians(angle)) *
-                        enginePower * dt;
-                velocity.y += (float) Math.sin(Math.toRadians(angle)) *
-                        enginePower * dt;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                velocity.x -= (float) Math.cos(Math.toRadians(angle)) *
-                        enginePower * dt;
-                velocity.y -= (float) Math.sin(Math.toRadians(angle)) *
-                        enginePower * dt;
-            }
-
-            position.mulAdd(velocity, dt);
-
-            float stopKoef = 1.0f - 2.0f * dt;
-            if (stopKoef < 0.0f) {
-                stopKoef = 0.0f;
-            }
-            velocity.scl(stopKoef);
+        fireTimer += dt;
+        if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+            tryToFire();
         }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            angle += 180.0f * dt;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            angle -= 180.0f * dt;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            velocity.x += (float) Math.cos(Math.toRadians(angle)) *
+                    enginePower * dt;
+            velocity.y += (float) Math.sin(Math.toRadians(angle)) *
+                    enginePower * dt;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            velocity.x -= (float) Math.cos(Math.toRadians(angle)) *
+                    enginePower * dt;
+            velocity.y -= (float) Math.sin(Math.toRadians(angle)) *
+                    enginePower * dt;
+        }
+
+        position.mulAdd(velocity, dt);
+
+        float stopKoef = 1.0f - 2.0f * dt;
+        if (stopKoef < 0.0f) {
+            stopKoef = 0.0f;
+        }
+        velocity.scl(stopKoef);
 
         exhaust();
         checkSpaceBorders();
@@ -259,11 +236,10 @@ public class Hero implements Consumable{
     }
 
     private void updateHP(float dt) {
-        // ПОХВАЛИТЬСЯ
         if (hpView != hp) {
             float hpSpeed = (hpView - hp) / 2.0f;
             if (Math.abs(hpSpeed) < 500.0f) {
-                hpSpeed = hpSpeed / Math.abs(hpSpeed) * 500.0f;
+                hpSpeed = Math.signum(hpSpeed) * 500.0f;
             }
             hpView -= hpSpeed * dt;
         }
