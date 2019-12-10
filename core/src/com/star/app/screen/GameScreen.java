@@ -36,7 +36,9 @@ public class GameScreen extends AbstractScreen {
         Assets.getInstance().loadAssets(ScreenManager.ScreenType.GAME);
 //        if (ScreenManager.getInstance().getGc() == null ||
 //                !ScreenManager.getInstance().getGc().isActive()) {
+        if (ScreenManager.getInstance().getGc() == null) {
             gameController = new GameController();
+        }
             worldRenderer = new WorldRenderer(gameController, batch);
 //        }
 

@@ -1,5 +1,6 @@
 package com.star.app.game;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -8,6 +9,8 @@ import com.star.app.game.bodies.AsteroidController;
 import com.star.app.game.items.Item;
 import com.star.app.game.items.ItemsController;
 import com.star.app.screen.ScreenManager;
+import com.star.app.screen.utils.Assets;
+
 import static java.lang.Math.*;
 
 public class GameController {
@@ -27,6 +30,7 @@ public class GameController {
     private int level;
     private boolean isLevelFinished;
     private float newLevelMsgTimer;
+    private Sound newLevelSound;
 
     public GameController() {
         isPaused = false;
@@ -34,6 +38,9 @@ public class GameController {
         isLevelFinished = false;
         level = 1;
         newLevelMsgTimer = NEW_LEVEL_TIMER;
+        newLevelSound = Assets.getInstance().
+                getAssetManager().get("audio/NewLevel.mp3");
+        newLevelSound.play();
 
         background = new Background(this);
         hero = new Hero(this, "PLAYER1");
@@ -106,6 +113,7 @@ public class GameController {
     public void levelUp() {
         level++;
         newLevelMsgTimer = NEW_LEVEL_TIMER;
+        newLevelSound.play();
 
         // Обновляем игрока
         hero.initialize();

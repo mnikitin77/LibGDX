@@ -3,6 +3,7 @@ package com.star.app.screen.utils;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -40,15 +41,23 @@ public class Assets {
             case MENU:
                 createStandardFont(72);
                 createStandardFont(24);
+                assetManager.load("audio/Space.mp3", Music.class);
                 break;
             case GAME:
                 createStandardFont(72);
                 createStandardFont(32);
                 createStandardFont(24);
                 assetManager.load("audio/Shoot.mp3", Sound.class);
+                assetManager.load("audio/Consume.mp3", Sound.class);
+                assetManager.load("audio/Money.mp3", Sound.class);
+                assetManager.load("audio/NewLevel.mp3", Sound.class);
+                assetManager.load("audio/RechargeWeapon.mp3", Sound.class);
+                assetManager.load("audio/Stone.mp3", Sound.class);
+                assetManager.load("audio/Collision.mp3", Sound.class);
                 break;
             case GAMEOVER:
                 createStandardFont(32);
+                assetManager.load("audio/GameOver.mp3", Sound.class);
                 break;
         }
     }

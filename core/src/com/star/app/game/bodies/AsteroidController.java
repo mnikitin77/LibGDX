@@ -1,5 +1,6 @@
 package com.star.app.game.bodies;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -12,15 +13,17 @@ public class AsteroidController extends ObjectPool<Asteroid> {
     //private static final int ASTEROIDS_COUNT = 3;
     private static final int ASTEROIDS_COUNT = 2;
     protected TextureRegion asteroidTexture;
+    private Sound crashSound;
 
     @Override
     protected Asteroid newObject() {
-        return new Asteroid(gc, asteroidTexture, MathUtils.random(5f, 10f));
+        return new Asteroid(gc, asteroidTexture, crashSound, MathUtils.random(5f, 10f));
     }
 
     public AsteroidController(GameController gc) {
         this.gc = gc;
         asteroidTexture = Assets.getInstance().getAtlas().findRegion("asteroid");
+        crashSound = Assets.getInstance().getAssetManager().get("audio/Stone.mp3");
         initialize();
     }
 

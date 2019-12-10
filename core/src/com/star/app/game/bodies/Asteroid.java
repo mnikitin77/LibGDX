@@ -1,5 +1,6 @@
 package com.star.app.game.bodies;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
@@ -28,8 +29,9 @@ public class Asteroid extends SpaceBody implements Poolable {
     private int imgHeight;
 
     private boolean active;
+    private Sound crashSound;
 
-    public Asteroid(GameController gc, TextureRegion texture, float weight)
+    public Asteroid(GameController gc, TextureRegion texture, Sound crashSound, float weight)
             throws IllegalArgumentException {
         if (weight < MIN_WEIGHT || weight > MAX_WEIGHT) {
             throw new IllegalArgumentException(
@@ -52,6 +54,8 @@ public class Asteroid extends SpaceBody implements Poolable {
         rotAngle = 0;
         hitArea = new Circle();
         hitPoints = 0;
+
+        this.crashSound = crashSound;
 
         active = false;
     }
@@ -135,6 +139,7 @@ public class Asteroid extends SpaceBody implements Poolable {
     public boolean takeDamage(int amount) {
         hp -= amount;
         if (hp <= 0) {
+            crashSound.play();
             deactivate();
             if (scale >= 0.5f) {
                 for (int i = 0; i < 3; i++) {

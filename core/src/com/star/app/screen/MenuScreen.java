@@ -1,6 +1,7 @@
 package com.star.app.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,6 +21,7 @@ public class MenuScreen extends AbstractScreen {
     private BitmapFont font72;
     private BitmapFont font24;
     private Stage stage;
+    private Music menuMusic;
 
     public MenuScreen(SpriteBatch batch) {
         super(batch);
@@ -100,6 +102,11 @@ public class MenuScreen extends AbstractScreen {
         if (!OptionsUtils.isOptionsExists()) {
             OptionsUtils.createDefaultProperties();
         }
+
+        menuMusic =
+                Assets.getInstance().getAssetManager().get("audio/Space.mp3");
+        menuMusic.setLooping(true);
+        menuMusic.play();
     }
 
     public void update(float dt) {

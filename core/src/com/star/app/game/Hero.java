@@ -2,6 +2,7 @@ package com.star.app.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -35,7 +36,7 @@ public class Hero implements Consumable{
     private Circle hitArea;
     private StringBuilder strBuilder;
     private Weapon currentWeapon;
-    private int levelFinishedTimer;
+    private Sound collisionSound;
 
 
     public int getMoney() {
@@ -83,7 +84,6 @@ public class Hero implements Consumable{
         hitArea = new Circle(0f, 0f, texture.getRegionWidth() / 2 * 0.9f);
         strBuilder = new StringBuilder();
         money = 0;
-        levelFinishedTimer = 0;
 
         keysControl = new KeysControl(OptionsUtils.loadProperties(), keysControlPrefix);
 
@@ -95,6 +95,8 @@ public class Hero implements Consumable{
                         new Vector3(24, -90, 0)
                 }
         );
+
+        collisionSound = Assets.getInstance().getAssetManager().get("audio/Collision.mp3");
     }
 
     public void initialize() {
@@ -132,23 +134,23 @@ public class Hero implements Consumable{
         updateMoney(dt);
 
         fireTimer += dt;
-        if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+        if (Gdx.input.isKeyPressed(keysControl.fire)) {
             tryToFire();
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        if (Gdx.input.isKeyPressed(keysControl.left)) {
             angle += 180.0f * dt;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if (Gdx.input.isKeyPressed(keysControl.right)) {
             angle -= 180.0f * dt;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+        if (Gdx.input.isKeyPressed(keysControl.forward)) {
             velocity.x += (float) Math.cos(Math.toRadians(angle)) *
                     enginePower * dt;
             velocity.y += (float) Math.sin(Math.toRadians(angle)) *
                     enginePower * dt;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+        if (Gdx.input.isKeyPressed(keysControl.backward)) {
             velocity.x -= (float) Math.cos(Math.toRadians(angle)) *
                     enginePower * dt;
             velocity.y -= (float) Math.sin(Math.toRadians(angle)) *
@@ -177,6 +179,7 @@ public class Hero implements Consumable{
     }
 
     public boolean takeDamage(int amount) {
+        collisionSound.play();
         hp -= amount;
         if (hp <= 0) {
             hp = 0;
