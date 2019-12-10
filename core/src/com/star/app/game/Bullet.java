@@ -1,5 +1,6 @@
 package com.star.app.game;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.star.app.game.helpers.Poolable;
 import com.star.app.screen.ScreenManager;
@@ -10,7 +11,9 @@ public class Bullet implements Poolable {
     private boolean active;
     private float angle;
     private int damage;
-    float lifetimeDistance;
+    private float lifetimeDistance;
+    private TextureRegion textureRegion;
+
 
     public Vector2 getPosition() {
         return position;
@@ -28,6 +31,10 @@ public class Bullet implements Poolable {
         return damage;
     }
 
+    public TextureRegion getTextureRegion() {
+        return textureRegion;
+    }
+
     @Override
     public boolean isActive() {
         return active;
@@ -43,13 +50,16 @@ public class Bullet implements Poolable {
         this.active = false;
     }
 
-    public void activate(float x, float y, float vx, float vy, int damage, float angle, float lifetimeDistance) {
+    public void activate(float x, float y, float vx, float vy, int damage,
+                         float angle, float lifetimeDistance,
+                         TextureRegion textureRegion) {
         this.position.set(x, y);
         this.velocity.set(vx, vy);
         this.active = true;
         this.angle = angle;
         this.damage = damage;
         this.lifetimeDistance = lifetimeDistance;
+        this.textureRegion = textureRegion;
     }
 
     public void update(float dt) {

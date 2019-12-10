@@ -12,7 +12,8 @@ public class ItemsController  extends ObjectPool<Item> {
     private GameController gc;
     protected TextureRegion medkitTexture;
     protected TextureRegion coinsTexture;
-    protected TextureRegion bulletBoxTexture;
+    protected TextureRegion laserBulletTexture;
+    protected TextureRegion gunBulletTexture;
 
     @Override
     protected Item newObject() {
@@ -23,7 +24,8 @@ public class ItemsController  extends ObjectPool<Item> {
         this.gc = gc;
         medkitTexture = Assets.getInstance().getAtlas().findRegion("medical-pack-alt-white");
         coinsTexture = Assets.getInstance().getAtlas().findRegion("two-coins");;
-        bulletBoxTexture = Assets.getInstance().getAtlas().findRegion("heavy-bullets");
+        laserBulletTexture = Assets.getInstance().getAtlas().findRegion("heavy-bullets");
+        gunBulletTexture = Assets.getInstance().getAtlas().findRegion("nuclear-bomb");
     }
 
     public void setup(float x, float y, float vx, float vy, float scale) {
@@ -50,7 +52,13 @@ public class ItemsController  extends ObjectPool<Item> {
             case 1:
                 return new Coins(coinsTexture);
             case 2:
-                return new BulletBox(bulletBoxTexture);
+                switch (MathUtils.random(0, 2)) {
+                    case 0:
+                    case 1:
+                        return new LaserBulletBox(laserBulletTexture);
+                    case 2:
+                        return new GunBulletBox(gunBulletTexture);
+                }
             default:
                 return null;
         }

@@ -6,11 +6,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.star.app.game.Consumable;
 import com.star.app.screen.utils.Assets;
 
-public class BulletBox extends Item {
+public class GunBulletBox extends Item {
     private static final int BULLET_MULTIPLIER = 100;
     private Sound rechargeSound;
 
-    public BulletBox(TextureRegion texture) {
+    public GunBulletBox(TextureRegion texture) {
         super(texture);
         rechargeSound = Assets.getInstance().
                 getAssetManager().get("audio/RechargeWeapon.mp3");
@@ -19,7 +19,7 @@ public class BulletBox extends Item {
     @Override
     public void interact(Consumable consumer) {
         rechargeSound.play();
-        consumer.rechargeWeapon(getAmount());
+        consumer.rechargeLaser(getAmount());
     }
 
     @Override

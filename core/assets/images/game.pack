@@ -24,6 +24,20 @@ gameover
   orig: 340, 148
   offset: 0, 0
   index: -1
+turret
+  rotate: false
+  xy: 260, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
+laser-turret
+  rotate: false
+  xy: 358, 2
+  size: 96, 96
+  orig: 96, 96
+  offset: 0, 0
+  index: -1
 simpleButton
   rotate: false
   xy: 2, 652
@@ -40,56 +54,63 @@ asteroids64
   index: -1
 ship
   rotate: false
-  xy: 260, 2
+  xy: 260, 100
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 two-coins
   rotate: false
-  xy: 326, 2
+  xy: 456, 2
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+nuclear-bomb
+  rotate: false
+  xy: 260, 166
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 medical-pack-alt-white
   rotate: false
-  xy: 376, 2
+  xy: 326, 100
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 heavy-bullets
   rotate: false
-  xy: 426, 2
+  xy: 326, 150
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 smButton
   rotate: false
-  xy: 260, 68
+  xy: 376, 100
   size: 120, 32
   orig: 120, 32
   offset: 0, 0
   index: -1
 bullet32
   rotate: false
-  xy: 382, 68
+  xy: 260, 216
   size: 64, 32
   orig: 64, 32
   offset: 0, 0
   index: -1
 bullet
   rotate: false
-  xy: 476, 2
+  xy: 456, 52
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 star16
   rotate: false
-  xy: 476, 36
+  xy: 490, 52
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
