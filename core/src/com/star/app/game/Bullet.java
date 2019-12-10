@@ -9,6 +9,8 @@ public class Bullet implements Poolable {
     private Vector2 velocity;
     private boolean active;
     private float angle;
+    private int damage;
+    float lifetimeDistance;
 
     public Vector2 getPosition() {
         return position;
@@ -20,6 +22,10 @@ public class Bullet implements Poolable {
 
     public Vector2 getVelocity() {
         return velocity;
+    }
+
+    public int getDamage() {
+        return damage;
     }
 
     @Override
@@ -37,16 +43,19 @@ public class Bullet implements Poolable {
         this.active = false;
     }
 
-    public void activate(float x, float y, float vx, float vy, float angle) {
+    public void activate(float x, float y, float vx, float vy, int damage, float angle, float lifetimeDistance) {
         this.position.set(x, y);
         this.velocity.set(vx, vy);
         this.active = true;
         this.angle = angle;
+        this.damage = damage;
+        this.lifetimeDistance = lifetimeDistance;
     }
 
     public void update(float dt) {
         position.mulAdd(velocity, dt);
-        if (position.x < 0.0f || position.x > ScreenManager.SCREEN_WIDTH ||
+        lifetimeDistance -= velocity.len() * dt;
+        if (lifetimeDistance < 0.0f || position.x < 0.0f || position.x > ScreenManager.SCREEN_WIDTH ||
                 position.y < 0.0f || position.y > ScreenManager.SCREEN_HEIGHT) {
             deactivate();
         }

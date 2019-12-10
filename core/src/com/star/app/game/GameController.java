@@ -22,6 +22,7 @@ public class GameController {
     private AsteroidController asteroidController;
     private ParticleController particleController;
     private ItemsController itemsController;
+    private InfoController infoController;
     private Hero hero;
     private Vector2 tmpVec;
     private boolean isActive;
@@ -48,6 +49,7 @@ public class GameController {
         asteroidController = new AsteroidController(this);
         particleController = new ParticleController();
         itemsController = new ItemsController(this);
+        infoController = new InfoController();
         tmpVec = new Vector2(0.0f, 0.0f);
         itemAttractArea = new Circle();
 
@@ -110,6 +112,10 @@ public class GameController {
         return newLevelMsgTimer;
     }
 
+    public InfoController getInfoController() {
+        return infoController;
+    }
+
     public void levelUp() {
         level++;
         newLevelMsgTimer = NEW_LEVEL_TIMER;
@@ -137,6 +143,7 @@ public class GameController {
         asteroidController.update(dt);
         itemsController.update(dt);
         particleController.update(dt);
+        infoController.update(dt);
 
         if (hero.getHp() > 0) {
             // Проверяем столкновение героя с объектами.
@@ -247,7 +254,8 @@ public class GameController {
 
                     b.deactivate(); // Считаем, что одним зарядом можем
                     // убить только один астероид.
-                    if (a.takeDamage(10)) {
+//                    if (a.takeDamage(10)) {
+                    if (a.takeDamage(b.getDamage())) {
                         hero.addScore(a.getHpMax() * 100);
                     }
                     break;

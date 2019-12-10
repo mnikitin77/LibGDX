@@ -13,7 +13,39 @@ public class ParticleController extends ObjectPool<Particle> {
             for (int i = 0; i < 15; i++) {
                 float randomAngle = MathUtils.random(0, 6.28f);
                 float randomSpeed = MathUtils.random(0, 50.0f);
-                setup(x, y, (float) Math.cos(randomAngle) * randomSpeed, (float) Math.sin(randomAngle) * randomSpeed, 1.2f, 2.0f, 1.8f, 1, 0, 0, 1, 1, 0, 0, 0.2f);
+                setup(x, y, (float) Math.cos(randomAngle) * randomSpeed,
+                        (float) Math.sin(randomAngle) * randomSpeed, 1.2f,
+                        2.0f, 1.8f, 1, 0, 0, 1, 1, 0, 0, 0.2f);
+            }
+        }
+
+        public void takePowerUpEffect(float x, float y, int index) {
+            // MONEY(0) blue, AMMOS(1) red, MEDKIT(2) green;
+            switch (index) {
+                case 0:
+                    for (int i = 0; i < 16; i++) {
+                        float angle = 6.28f / 16.0f * i;
+                        setup(x, y, (float) Math.cos(angle) * 100.0f,
+                                (float) Math.sin(angle) * 100.0f, 0.8f, 3.0f,
+                                2.8f, 0, 0, 1, 1, 1, 1, 0, 0.4f);
+                    }
+                    break;
+                case 1:
+                    for (int i = 0; i < 8; i++) {
+                        float angle = 6.28f / 8.0f * i;
+                        setup(x, y, (float) Math.cos(angle) * 100.0f,
+                                (float) Math.sin(angle) * 100.0f, 0.8f, 3.0f,
+                                2.8f, 1, 0, 0, 1, 1, 1, 0, 0.4f);
+                    }
+                    break;
+                case 2:
+                    for (int i = 0; i < 24; i++) {
+                        float angle = 6.28f / 24.0f * i;
+                        setup(x, y, (float) Math.cos(angle) * 100.0f,
+                                (float) Math.sin(angle) * 100.0f, 0.8f, 3.0f,
+                                2.8f, 0, 1, 0, 1, 1, 1, 0, 0.4f);
+                    }
+                    break;
             }
         }
     }
@@ -41,8 +73,12 @@ public class ParticleController extends ObjectPool<Particle> {
             Particle o = activeList.get(i);
             float t = o.getTime() / o.getTimeMax();
             float scale = lerp(o.getSize1(), o.getSize2(), t);
-            batch.setColor(lerp(o.getR1(), o.getR2(), t), lerp(o.getG1(), o.getG2(), t), lerp(o.getB1(), o.getB2(), t), lerp(o.getA1(), o.getA2(), t));
-            batch.draw(oneParticle, o.getPosition().x - 8, o.getPosition().y - 8, 8, 8, 16, 16, scale, scale, 0);
+            batch.setColor(lerp(o.getR1(), o.getR2(), t),
+                    lerp(o.getG1(), o.getG2(), t),
+                    lerp(o.getB1(), o.getB2(), t),
+                    lerp(o.getA1(), o.getA2(), t));
+            batch.draw(oneParticle, o.getPosition().x - 8,
+                    o.getPosition().y - 8, 8, 8, 16, 16, scale, scale, 0);
         }
         batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
@@ -53,16 +89,23 @@ public class ParticleController extends ObjectPool<Particle> {
             if(MathUtils.random(0, 200) < 3) {
                 scale *= 5.0f;
             }
-            batch.setColor(lerp(o.getR1(), o.getR2(), t), lerp(o.getG1(), o.getG2(), t), lerp(o.getB1(), o.getB2(), t), lerp(o.getA1(), o.getA2(), t));
-            batch.draw(oneParticle, o.getPosition().x - 8, o.getPosition().y - 8, 8, 8, 16, 16, scale, scale, 0);
+            batch.setColor(lerp(o.getR1(), o.getR2(), t),
+                    lerp(o.getG1(), o.getG2(), t),
+                    lerp(o.getB1(), o.getB2(), t),
+                    lerp(o.getA1(), o.getA2(), t));
+            batch.draw(oneParticle, o.getPosition().x - 8,
+                    o.getPosition().y - 8, 8, 8, 16, 16, scale, scale, 0);
         }
         batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
-    public void setup(float x, float y, float vx, float vy, float timeMax, float size1, float size2, float r1, float g1, float b1, float a1, float r2, float g2, float b2, float a2) {
+    public void setup(float x, float y, float vx, float vy, float timeMax,
+                      float size1, float size2, float r1, float g1, float b1,
+                      float a1, float r2, float g2, float b2, float a2) {
         Particle item = getActiveElement();
-        item.init(x, y, vx, vy, timeMax, size1, size2, r1, g1, b1, a1, r2, g2, b2, a2);
+        item.init(x, y, vx, vy, timeMax, size1, size2,
+                r1, g1, b1, a1, r2, g2, b2, a2);
     }
 
     public void update(float dt) {
@@ -72,7 +115,8 @@ public class ParticleController extends ObjectPool<Particle> {
         checkPool();
     }
 
-    public float lerp(float value1, float value2, float point) {
+    public float lerp(float value1, float value2, float point)
+    {
         return value1 + (value2 - value1) * point;
     }
 }

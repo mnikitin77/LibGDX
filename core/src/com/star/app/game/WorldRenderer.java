@@ -69,6 +69,7 @@ public class WorldRenderer {
         gc.getAsteroidController().render(batch);
         gc.getItemsController().render(batch, font24);
         gc.getParticleController().render(batch);
+        gc.getInfoController().render(batch, font32);
         batch.end();
 
         frameBuffer.end();

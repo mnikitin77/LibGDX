@@ -15,6 +15,8 @@ public class Weapon {
     private float bulletSpeed;
     private int maxBullets;
     private int curBullets;
+    float distance;
+    private float fireTimer;
     private Sound shootSound;
 
     // Когда мы описываем слот Vector3[] slots:
@@ -36,7 +38,7 @@ public class Weapon {
         return curBullets;
     }
 
-    public Weapon(GameController gc, Hero hero, String title, float firePeriod, int damage, float bulletSpeed, int maxBullets, Vector3[] slots) {
+    public Weapon(GameController gc, Hero hero, String title, float firePeriod, int damage, float distance, float bulletSpeed, int maxBullets, Vector3[] slots) {
         this.gc = gc;
         this.hero = hero;
         this.title = title;
@@ -46,11 +48,17 @@ public class Weapon {
         this.maxBullets = maxBullets;
         curBullets = this.maxBullets;
         this.slots = slots;
+        this.distance = distance;
         shootSound = Assets.getInstance().getAssetManager().get("audio/Shoot.mp3");
     }
 
+    public void update(float dt) {
+        fireTimer += dt;
+    }
+
     public void fire() {
-        if (curBullets > 0) {
+        if (fireTimer > firePeriod && (curBullets > 0 || maxBullets == -1)) {
+            fireTimer = 0;
             curBullets--;
             shootSound.play();
 
@@ -60,7 +68,7 @@ public class Weapon {
                 y = hero.getPosition().y + slots[i].x * MathUtils.sinDeg(hero.getAngle() + slots[i].y);
                 vx = hero.getVelocity().x + bulletSpeed * MathUtils.cosDeg(hero.getAngle() + slots[i].z);
                 vy = hero.getVelocity().y + bulletSpeed * MathUtils.sinDeg(hero.getAngle() + slots[i].z);
-                gc.getBulletController().setup(x, y, vx, vy, hero.getAngle() + slots[i].z);
+                gc.getBulletController().setup(x, y, vx, vy, damage, hero.getAngle() + slots[i].z, distance);
             }
         }
     }
