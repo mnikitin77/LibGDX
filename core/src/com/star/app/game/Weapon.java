@@ -1,6 +1,7 @@
 package com.star.app.game;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.star.app.screen.utils.Assets;
@@ -8,6 +9,7 @@ import com.star.app.screen.utils.Assets;
 public class Weapon {
 
     private GameController gc;
+    private WeaponType type;
     private Hero hero;
     private String title;
     private float firePeriod;
@@ -15,8 +17,9 @@ public class Weapon {
     private float bulletSpeed;
     private int maxBullets;
     private int curBullets;
-    float distance;
+    private float distance;
     private float fireTimer;
+    private TextureRegion textureRegion;
     private Sound shootSound;
 
     // Когда мы описываем слот Vector3[] slots:
@@ -38,7 +41,19 @@ public class Weapon {
         return curBullets;
     }
 
-    public Weapon(GameController gc, Hero hero, String title, float firePeriod, int damage, float distance, float bulletSpeed, int maxBullets, Vector3[] slots) {
+    public WeaponType getType() {
+        return type;
+    }
+
+    public TextureRegion getTextureRegion() {
+        return textureRegion;
+    }
+
+    public Weapon(GameController gc, Hero hero, String title,
+                  float firePeriod, int damage, float distance,
+                  float bulletSpeed, int maxBullets, WeaponType type,
+                  Sound shootSound, TextureRegion textureRegion,
+                  Vector3[] slots) {
         this.gc = gc;
         this.hero = hero;
         this.title = title;
@@ -49,7 +64,11 @@ public class Weapon {
         curBullets = this.maxBullets;
         this.slots = slots;
         this.distance = distance;
-        shootSound = Assets.getInstance().getAssetManager().get("audio/Shoot.mp3");
+        this.type = type;
+        this.textureRegion = textureRegion;
+        this.shootSound = shootSound;
+//        Assets.getInstance().
+//                getAssetManager().get("audio/Shoot.mp3");
     }
 
     public void update(float dt) {

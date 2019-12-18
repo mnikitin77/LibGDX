@@ -148,7 +148,7 @@ public class Asteroid extends SpaceBody implements Poolable {
                             MathUtils.random(-150.0f, 150.0f),
                             scale - 0.2f);
                 }
-            } else { // выкидываем предмет с вероятностью 10%
+            } else { // выкидываем предмет с вероятностью 25%
                 if (MathUtils.random() <= ITEM_THROW_PROBABILITY) {
                     gc.getItemsController().setup(
                             position.x, position.y, 0f, 0f, 1.0f);

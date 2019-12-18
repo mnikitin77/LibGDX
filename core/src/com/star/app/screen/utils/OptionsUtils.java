@@ -30,6 +30,10 @@ public class OptionsUtils {
             properties.put("PLAYER1_RIGHT", String.valueOf(Input.Keys.D));
             properties.put("PLAYER1_BACKWARD", String.valueOf(Input.Keys.S));
             properties.put("PLAYER1_FIRE", String.valueOf(Input.Keys.P));
+            properties.put("PLAYER1_LASER", String.valueOf(Input.Keys.NUM_1));
+            properties.put("PLAYER1_GUN", String.valueOf(Input.Keys.NUM_2));
+            properties.put("PLAYER1_PREV", String.valueOf(Input.Keys.LEFT_BRACKET));
+            properties.put("PLAYER1_NEXT", String.valueOf(Input.Keys.RIGHT_BRACKET));
             properties.store(Gdx.files.local("options.properties").write(false), null);
         } catch (IOException e) {
             e.printStackTrace();

@@ -45,7 +45,7 @@ public class GameController {
 
         background = new Background(this);
         hero = new Hero(this, "PLAYER1");
-        bulletController = new BulletController();
+        bulletController = new BulletController(this);
         asteroidController = new AsteroidController(this);
         particleController = new ParticleController();
         itemsController = new ItemsController(this);

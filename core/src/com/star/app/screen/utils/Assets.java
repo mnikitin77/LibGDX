@@ -54,6 +54,7 @@ public class Assets {
                 assetManager.load("audio/RechargeWeapon.mp3", Sound.class);
                 assetManager.load("audio/Stone.mp3", Sound.class);
                 assetManager.load("audio/Collision.mp3", Sound.class);
+                assetManager.load("audio/Cannon.mp3", Sound.class);
                 break;
             case GAMEOVER:
                 createStandardFont(32);
